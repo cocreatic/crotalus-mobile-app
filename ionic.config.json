@@ -1,0 +1,7 @@
+{
+  "name": "crotalusApp",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
