@@ -1,0 +1,39 @@
+.inner-nav-tabs {
+
+  .back-button {
+    flex-grow: 0;
+  }
+
+  .header-wrapper {
+    display: flex;
+  }
+
+  ion-tab-button:not(.back--button) {
+    font-size: 0.95em;
+    color: var(--ion-color-primary);
+  }
+
+  ion-tab-button:not(:first-child):not(:last-child) {
+    position: relative;
+
+    &::after {
+      $divider-diameter: 4px;
+      $divider-radius: $divider-diameter / 2;
+      content: '';
+      position: absolute;
+      width: $divider-diameter;
+      height: $divider-diameter;
+      background-color: var(--ion-color-primary);
+      top: calc(50% - #{$divider-radius});
+      right: -#{$divider-radius};
+      border-radius: #{$divider-radius};
+    }
+
+  }
+  
+  @for $i from 1 through 4 {
+    ion-tab-button:nth-child(#{$i}) {
+      z-index: #{5 - $i};
+    }
+  }
+}

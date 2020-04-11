@@ -24,3 +24,19 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
+
+/* Custom sketchy font */
+@font-face {
+  font-family: 'Cabin Sketch';
+  src: url('assets/font/sketchy.woff2');
+}
+
+.sketchy {
+  font-family: 'Cabin Sketch';
+
+  &-bold {
+    font-weight: bold;
+  }
+}
+
+

@@ -1,0 +1,53 @@
+ <ion-content>
+   <div class="dark-theme-control main-item">
+    <ion-item>
+      <ion-label class="title">Modo oscuro</ion-label>
+      <ion-toggle [checked]="darkThemeEnabled" (ionChange)="darkThemeChange($event)" color="success" slot="end"></ion-toggle>
+    </ion-item>
+   </div>
+   <div class="default-item-type-search main-item">
+     <ion-item>
+       <div class="content-wrapper">
+         <ion-label class="title">Búsqueda por defecto</ion-label>
+         <ion-list class="item-type-list">
+           <ion-radio-group value="all" (ionChange)="updateDefaultTypeForSearch($event)">
+             <ion-item>
+               <ion-label>Todo</ion-label>
+               <ion-radio color="primary" slot="start" value="all"></ion-radio>
+             </ion-item>
+         
+             <ion-item>
+               <ion-label>Imágenes <ion-icon name="image"></ion-icon></ion-label>
+               <ion-radio color="warning" slot="start" value="image"></ion-radio>
+             </ion-item>
+         
+             <ion-item>
+               <ion-label>Videos <ion-icon name="video-cam"></ion-icon></ion-label>
+               <ion-radio color="secondary" slot="start" value="video"></ion-radio>
+             </ion-item>
+     
+             <ion-item>
+               <ion-label>Audios <ion-icon name="volume-medium"></ion-icon></ion-label>
+               <ion-radio color="success" slot="start" value="audio"></ion-radio>
+             </ion-item>
+     
+             <ion-item>
+               <ion-label>Documentos <ion-icon name="document"></ion-icon></ion-label>
+               <ion-radio color="danger" slot="start" value="document"></ion-radio>
+             </ion-item>
+     
+             <ion-item>
+               <ion-label>Unidades didácticas <ion-icon name="people"></ion-icon></ion-label>
+               <ion-radio color="tertiary" slot="start" value="didacticUnit"></ion-radio>
+             </ion-item>
+           </ion-radio-group>
+         </ion-list>
+       </div>
+     </ion-item>
+   </div>
+   <div class="default-repositories"></div>
+
+   <ion-button (click)="resetCustomConfigs()" expand="block" fill="clear" shape="round">
+     Reset configs
+   </ion-button>
+ </ion-content>

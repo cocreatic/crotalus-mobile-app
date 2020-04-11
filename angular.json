@@ -39,6 +39,11 @@
                 "input": "src/global.scss"
               }
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src/theme/custom"
+              ]
+            },
             "scripts": []
           },
           "configurations": {

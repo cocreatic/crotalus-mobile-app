@@ -1,0 +1,23 @@
+  <ion-header>
+    <ion-toolbar>
+      <ion-button slot="start" [routerLink]="['/home']" fill="clear" class="back-button">
+        <ion-icon slot="icon-only" name="arrow-back" color="primary"></ion-icon>
+      </ion-button>
+      <ion-segment (ionChange)="navSegmentChanged($event)" value="appearance">
+        <ion-segment-button value="appearance">
+          <ion-label>Apariencia</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="repositories">
+          <ion-label>Repositorios</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="about">
+          <ion-label>Acerca de</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </ion-toolbar>
+  </ion-header>
+
+
+<ion-content>
+  <ion-router-outlet></ion-router-outlet>
+</ion-content>
