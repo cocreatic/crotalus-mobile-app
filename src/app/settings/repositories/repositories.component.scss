@@ -1,0 +1,45 @@
+ion-content {
+  --background: var(--custom-background);
+}
+
+.progress-bar-wrapper {
+  padding: 20px 0;
+}
+
+.content-wrapper{
+  width: 100%;
+  max-width: 400px;
+
+  .title {
+    padding: 18px 0 9px;
+  }
+}
+
+.title {
+  font-size: 18px;
+}
+
+.main-item {
+  margin-top: 40px;
+}
+
+
+ion-item {
+  --border-width: 0;
+  --inner-border-width: 0;
+}
+
+
+.repository {
+  .catalogues-name {
+    white-space: normal;
+  }
+}
+
+
+.reset-settings {
+  margin-top: 40px;
+  --padding-top: 25px;
+  --padding-bottom: 25px;
+  --box-shadow: none;
+}

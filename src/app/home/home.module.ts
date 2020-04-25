@@ -5,6 +5,9 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 import { HomePage } from './home.page';
+import { HideHeaderDirective } from './../directives/hide-header.directive';
+import { DetailsModalComponent } from './components/details-modal/details-modal.component';
+
 
 @NgModule({
   imports: [
@@ -16,8 +19,15 @@ import { HomePage } from './home.page';
         path: '',
         component: HomePage
       }
-    ])
+    ]),
   ],
-  declarations: [HomePage]
+  declarations: [
+    HomePage,
+    HideHeaderDirective,
+    DetailsModalComponent,
+  ],
+  entryComponents: [
+    DetailsModalComponent
+  ],
 })
 export class HomePageModule {}

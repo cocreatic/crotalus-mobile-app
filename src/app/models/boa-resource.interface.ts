@@ -1,3 +1,17 @@
+export interface BoaRepository {
+  name: string;
+  api: string;
+  version: number;
+  catalogs: BoaCatalog[];
+}
+
+export interface BoaCatalog {
+  key: string;
+  title: string;
+  access: string;
+  available: boolean;
+}
+
 export interface BoaResource {
   catalog_id: string;
   manifest: BoaResourceManifest;
@@ -6,6 +20,7 @@ export interface BoaResource {
   id: string;
   about: string;
   type?: string;
+  repositoryName?: string;
 }
 
 export interface BoaResourceManifest {

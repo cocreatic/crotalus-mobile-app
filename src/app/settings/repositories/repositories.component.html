@@ -1,1 +1,45 @@
-  <h2>Repositorios</h2>
+<ion-content>
+
+  <ng-container *ngIf="initializing; else elseTemplate">
+    <div class="progress-bar-wrapper">
+      <ion-progress-bar value="0.25" buffer="0.5"></ion-progress-bar> 
+    </div>
+  </ng-container>
+  <ng-template #elseTemplate>
+    <div class="available-repositories main-item">
+      <ion-item>
+        <div class="content-wrapper">
+          <ion-label class="title">Repositorios disponibles</ion-label>
+          <ion-list>
+            <ion-item class="repository" *ngFor="let repository of connectedRepositories, let i = index">
+              <ion-avatar slot="start">
+                <ion-toggle [checked]="true" color="success" (ionChange)="toggleRepository(repository, i)" ></ion-toggle>
+              </ion-avatar>
+              <ion-label>
+                <h2>{{repository.name}}</h2>
+                <h3>Catalogos: {{repository.catalogs.length}}</h3>
+                <p>{{getCataloguesList(repository)}}</p>
+              </ion-label>
+            </ion-item>
+            <ion-item class="repository" *ngFor="let repository of nonConnectedRepositories">
+              <ion-avatar slot="start">
+                <ion-toggle [checked]="false" color="success" (ionChange)="toggleRepository(repository)" ></ion-toggle>
+              </ion-avatar>
+              <ion-label>
+                <h2>{{repository.name}}</h2>
+                <h3>Catalogos: {{repository.catalogs.length}}</h3>
+                <p class="catalogues-name">{{getCataloguesList(repository)}}</p>
+              </ion-label>
+            </ion-item>
+          </ion-list>
+        </div>
+      </ion-item>
+    </div>
+
+    <ion-button class="reset-settings" (click)="resetCustomConfigs()" color="light" expand="block">
+      Restaurar valores por defecto
+    </ion-button>
+  </ng-template>
+
+  
+</ion-content>

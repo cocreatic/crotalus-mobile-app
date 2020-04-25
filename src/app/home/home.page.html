@@ -1,53 +1,96 @@
-<ion-header [translucent]="true">
-  <ion-toolbar class="title-toolbar">
-    <ion-buttons slot="start">
-      <ion-button color="secondary" [routerLink]="['/settings']">
-        <ion-icon slot="icon-only" name="settings"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <ion-buttons slot="end">
-      <ion-button color="secondary">
-        <ion-icon slot="icon-only" name="funnel"></ion-icon>
-      </ion-button>
-    </ion-buttons>
+<ion-content 
+  #content
+  [fullscreen]="true"
+  scrollEvents="true"
+  (ionScroll)="shouldAddSearchToHeader($event)"
+  appHideHeader
+  [header]="header"
+  [searchVisibleInHeader]="addSearchToHeader"
+>
+  <ion-header [translucent]="true" #header slot="fixed">
+    <ion-toolbar class="title-toolbar">
+      <ion-buttons slot="start">
+        <ion-button color="secondary" [routerLink]="['/settings/appearance']">
+          <ion-icon slot="icon-only" name="settings"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+      <!-- <ion-buttons slot="end">
+        <ion-button color="secondary">
+          <ion-icon slot="icon-only" name="funnel"></ion-icon>
+        </ion-button>
+      </ion-buttons> -->
 
-    <ion-title>
-      <div class="app-title">
-        <!-- <img src="assets/img/crotalus-icon.svg" alt="crotalus logo"> -->
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black" width="48px" height="48px">
-          <path d="M0 0h24v24H0V0z" fill="none" />
-          <path
-            d="M18 13v7H4V6h5.02c.05-.71.22-1.38.48-2H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-5l-2-2zm-1.5 5h-11l2.75-3.53 1.96 2.36 2.75-3.54zm2.8-9.11c.44-.7.7-1.51.7-2.39C20 4.01 17.99 2 15.5 2S11 4.01 11 6.5s2.01 4.5 4.49 4.5c.88 0 1.7-.26 2.39-.7L21 13.42 22.42 12 19.3 8.89zM15.5 9C14.12 9 13 7.88 13 6.5S14.12 4 15.5 4 18 5.12 18 6.5 16.88 9 15.5 9z" />
-          <path d="M0 0h24v24H0z" fill="none" /></svg>
-        <span class="label">Crotalus</span>
-      </div>
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
+      <ion-title>
+        <div class="app-title">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black" width="52px" height="52px">
+            <path d="M0 0h24v24H0V0z" fill="none" />
+            <path
+              d="M18 13v7H4V6h5.02c.05-.71.22-1.38.48-2H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-5l-2-2zm-1.5 5h-11l2.75-3.53 1.96 2.36 2.75-3.54zm2.8-9.11c.44-.7.7-1.51.7-2.39C20 4.01 17.99 2 15.5 2S11 4.01 11 6.5s2.01 4.5 4.49 4.5c.88 0 1.7-.26 2.39-.7L21 13.42 22.42 12 19.3 8.89zM15.5 9C14.12 9 13 7.88 13 6.5S14.12 4 15.5 4 18 5.12 18 6.5 16.88 9 15.5 9z" />
+            <path d="M0 0h24v24H0z" fill="none" /></svg>
+          <span class="label">Crotalus</span>
+        </div>
+      </ion-title>
+    </ion-toolbar>
 
-<ion-content [fullscreen]="true">
-  <div id="container">
-    <div class="first-search-indicator">
-      <ion-spinner *ngIf="isSearching" name="dots"></ion-spinner>
-    </div>
-
-    <div class="search-area" [class.pristine]="pristine">
-      <ion-input clearInput type="search" name="search-value" inputmode="search" placeholder="Ingresa tu búsqueda"
-      [(ngModel)]="valueToSearch" (keyup.enter)="search(true)"></ion-input>
+    <div class="search-area" *ngIf="addSearchToHeader" >
+      <ion-input clearInput type="search" name="search-value" inputmode="search" placeholder="Ingresa tu búsqueda" autocomplete="true" [(ngModel)]="valueToSearch" (keyup.enter)="search(true)"></ion-input>
       <ion-button (click)="search(true)" fill="solid">
         <ion-icon name="search-outline" slot="icon-only"></ion-icon>
       </ion-button>
     </div>
+  </ion-header>
+
+
+  <div id="container">
+
+    <div class="background" [class.dimmed]="results && results.length"></div>
+    <div class="first-search-indicator">
+      <ion-spinner *ngIf="isSearching" name="dots"></ion-spinner>
+    </div>
+    <ion-spinner *ngIf="showSpinner; else contentTemplate"></ion-spinner>
+
     
+    <ng-template #contentTemplate>
+
+      <div class="search-area" [class.pristine]="pristine" #searchBarWrapper *ngIf="showSearch">
+      <!-- <div class="search-area" [class.pristine]="pristine" #searchBarWrapper > -->
+        <ion-input clearInput type="search" name="search-value" inputmode="search" placeholder="Ingresa tu búsqueda" autocomplete="true" [(ngModel)]="valueToSearch" (keyup.enter)="search(true)"></ion-input>
+        <ion-button (click)="search(true)" fill="solid">
+          <ion-icon name="search-outline" slot="icon-only"></ion-icon>
+          <span *ngIf="pristine">Buscar</span>
+        </ion-button>
+      </div>
+  
+        <ion-card class="no-connected-repos" *ngIf="showNoRepos">
+          <ion-card-header>
+            <ion-card-title>No hay repositorios conectados para realizar la búsqueda.</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <p>
+              Para conectar un repositorio debes ir a la configuración, sección repositorios <br><br>
+              (<ion-icon name="settings"></ion-icon>&nbsp;&nbsp;->&nbsp;&nbsp; Repositorios)  
+            </p>
+            <!-- <ion-button color="primary" fill="clear" [routerLink]="['/settings/repositories']">
+            Configurar
+            <ion-icon slot="end" name="arrow-forward"></ion-icon>
+          </ion-button> -->
+          </ion-card-content>
+        </ion-card>
+
+    </ng-template>
     
+
+    
+
     <div *ngIf="results && results.length" class="results">
-      <ion-card class="item-card" *ngFor="let result of results">
+      <ion-card class="item-card" *ngFor="let result of results" (click)="openDetails(result)">
         <div class="content-wrapper">
           <div class="top-info-bar">
             <ion-chip outline color="primary">
               <ion-icon [name]="getItemTypeIcon(result.type)"></ion-icon>
               <ion-label>{{getItemTypeLabel(result.type)}}</ion-label>
             </ion-chip>
+            <span class="repository-name">{{result.repositoryName}}</span>
           </div>
           <ion-grid>
             <ion-row>
@@ -56,8 +99,8 @@
                   <ion-card-title>{{result.metadata.general.title.none}}</ion-card-title>
                 </ion-card-header>
                 <ion-card-content>
-                  <p>{{result.metadata.general.description.none}}</p>
-                  <p class="keywords ion-hide-sm-down"><em><strong>Palabras clave:
+                  <p class="description">{{result.metadata.general.description.none}}</p>
+                  <p class="keywords ion-hide-sm-down" *ngIf="result.metadata.general.keywords"><em><strong>Palabras clave:
                       </strong>{{result.metadata.general.keywords.none.join(', ')}}</em></p>
                 </ion-card-content>
               </ion-col>
@@ -65,7 +108,7 @@
                 <ion-row>
                   <ion-col size-xs="7" class="ion-hide-sm-up">
                     <ion-card-content>
-                      <p class="keywords"><em><strong>Palabras clave:
+                      <p class="keywords" *ngIf="result.metadata.general.keywords"><em><strong>Palabras clave:
                           </strong>{{result.metadata.general.keywords.none.join(', ')}}</em></p>
                     </ion-card-content>
                   </ion-col>

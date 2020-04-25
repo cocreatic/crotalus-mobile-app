@@ -1,7 +1,9 @@
-import { BoaResource } from './../models/boa-resource.interface';
+import { StorageKeys } from './../models/storageKeys.enum';
+import { BoaResource, BoaRepository, BoaCatalog } from './../models/boa-resource.interface';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { forkJoin, Observable } from 'rxjs';
+import { Storage } from '@ionic/storage';
+import { forkJoin, Observable, BehaviorSubject } from 'rxjs';
 import { tap, map } from 'rxjs/operators';
 
 @Injectable({
@@ -9,55 +11,75 @@ import { tap, map } from 'rxjs/operators';
 })
 export class SearchService {
 
-  // private apiUri: string;
   private apiRequestsCounter: number;
-  // filters: any[];
-  // catalogues: any[];
+  public repositories: BoaRepository[];
+  public reposConnectedNumber = new BehaviorSubject<number>(0);
 
-  // TODO: app settings to be modified through app's config
-  apiUri = 'http://boa.nuestroscursos.net/api';
+
   filters = [
     { meta: 'metadata.technical.format', value: ['image', 'video'] }
   ];
-  catalogues = [
-    { name: 'Contenido de BambuCo', key: 'bbco' },
-    { name: 'Repo de prueba', key: 'repositorio-de-pruebas' }
-  ];
-  options =  {
+
+  options = {
     resultsResponseSize: 5,
     minLetters: 3,
   };
 
 
-  constructor(private http: HttpClient) {
+  constructor(
+    private http: HttpClient,
+    private storage: Storage,
+  ) {
+    this.updateReposConnectedNumber();
   }
 
-  search(value: string, firstCall: boolean): Observable<any[]> {
+  updateReposConnectedNumber(): void {
+    this.getConnectedRepositories().then(() => {
+      const totalConnected = this.repositories !== null ? this.repositories.length : 0;
+      this.reposConnectedNumber.next(totalConnected);
+    });
+  }
+
+  async getConnectedRepositories(): Promise<void> {
+    this.repositories = await this.storage.get(StorageKeys.connectedRepositories);
+  }
+
+  public isThereAnyRepositoryConnected(): boolean {
+    return this.repositories && this.repositories.length > 0;
+  }
+
+  async search(value: string, firstCall: boolean): Promise<Observable<any[]>> {
     if (firstCall) {
       this.apiRequestsCounter = 0;
     }
-    const cataloguesToSearchIn = this.catalogues.map(catalog => catalog.key);
-    const requestsArray = cataloguesToSearchIn.map(catalogueKey =>
-      this.http.get(this.createCatalogRequestUrl(value, catalogueKey))
+    return this.createSearchRequest(value);
+  }
+
+  createSearchRequest(value: string): Observable<any[]> {
+    const requestToPerform = this.repositories.map(
+      (repository: BoaRepository) => {
+        return this.http.get(this.createRepositoryRequestUrl(value, repository)).pipe(
+          map((singleRepoResults: BoaResource[]) => {
+            return singleRepoResults.map((result: BoaResource) => {
+              result.type = result.metadata.technical.format.split('/')[0];
+              result.repositoryName = repository.name;
+              return result;
+            });
+          })
+        );
+      }
     );
-    return forkJoin([...requestsArray]).pipe(
-      tap(() => {
+
+    return forkJoin([...requestToPerform]).pipe(
+      tap((results) => {
         this.apiRequestsCounter += 1;
-      }),
-      map((multipleReposResults: any[]) => {
-        return multipleReposResults.map((singleRepoResults: BoaResource[]) => {
-          return singleRepoResults.map((result: BoaResource) => {
-            result.type = result.metadata.technical.format.split('/')[0];
-            return result;
-          });
-        });
-      }),
+      })
     );
   }
 
-
-  createCatalogRequestUrl(value: string, catalogKey: string) {
-    return `${this.apiUri}/c/${catalogKey}/resources.json?q=${value}&${this.generateRequestParams()}`;
+  createRepositoryRequestUrl(value: string, repository: BoaRepository) {
+    const repoCatalogues = repository.catalogs.map((catalog: BoaCatalog) => catalog.key).join('|');
+    return `${repository.api}/c/[${repoCatalogues}]/resources.json?q=${value}&${this.generateRequestParams()}`;
   }
 
   generateRequestParams() {
@@ -73,6 +95,6 @@ export class SearchService {
   }
 
   getResourceAbout(about: string) {
-    return this.http.get(about);
+    return this.http.get<BoaResource>(about);
   }
 }

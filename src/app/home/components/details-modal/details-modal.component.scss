@@ -1,0 +1,104 @@
+
+.title {
+  padding: 0px 4px 0px 8px;
+    
+  ion-icon.icon {
+    color: var(--details-title-color);
+    width: 26px;
+    height: 26px;
+    margin-right: 6px;
+  }
+  
+  span:not(.icon) {
+    font-size: 18px;
+    font-family: "Cabin Sketch",cursive;
+    font-weight: bold;
+    color: var(--details-title-color);
+  }
+
+  ion-buttons ion-button ion-icon {
+    width: 26px;
+    height: 26px;
+  }
+}
+
+.image-wrapper {
+  text-align: center;
+  
+  img {
+    margin: 20px auto 0;
+    max-width: 200px;
+  }
+}
+
+.info-wrapper {
+  flex: 1 0 250px;
+    padding: 20px 30px;
+
+  .info-item {
+    padding-left: 8px;
+    margin-bottom: 20px;
+    max-width: 700px;
+
+    h4 {
+      margin-left: -8px;
+      margin-top: 8px;
+      margin-bottom: 4px;
+      font-size: 18px;
+      font-weight: bold;
+      color: var(--details-title-color);
+      text-align: left;
+      font-family: "Cabin Sketch",cursive;
+    }
+
+    &.copyright {
+
+      p {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+      }
+
+      .license-link {
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
+        padding: 5px;
+        border-radius: 3px;
+
+        &:hover {
+          opacity: 0.6;
+        }
+      }
+
+      .version-wrapper {
+        display: inline-block;
+        text-align: center;
+        margin: 0 5px 0 10px;
+        font-size: 0.8em;
+      }
+    }
+  }
+
+  .contribution-item {
+    margin-bottom: 16px;
+    display: inline-block;
+    background: var(--ion-color-light-shade);
+    padding: 6px 10px;
+    border-radius: 4px;
+    text-align: right;
+    margin: 8px 16px 8px 0;
+    line-height: 18px;
+
+    span.rol {
+      font-size: 0.95em;
+      font-style: oblique;
+      opacity: 0.9;
+    }
+
+    span {
+      font-size: 0.75em;
+      opacity: 0.75;
+    }
+  }
+}

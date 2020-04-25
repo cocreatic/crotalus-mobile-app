@@ -4,9 +4,19 @@
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "www",
-  "cordova": {},
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": false,
+      "androidScaleType": "CENTER_CROP"
+    }
+  },
+  "cordova": {
+    "StatusBarOverlaysWebView": "false",
+    "ScrollEnabled": "false",
+    "android-minSdkVersion": "21",
+    "BackupWebStorage": "none"
+  },
   "server": {
-    "url": "http://192.168.1.14:8100",
     "cleartext": true
   }
 }

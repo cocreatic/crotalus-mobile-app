@@ -1,0 +1,84 @@
+<ion-content>
+
+  <ion-header class="title">
+    <ion-toolbar>
+      <ion-icon class="icon" [name]="titleIcon" slot="start"></ion-icon>
+      <div class="title">
+        <h4>
+          <span>{{ title }}</span>
+        </h4>
+      </div>
+      <ion-buttons slot="end">
+        <ion-button color="primary" size="large" (click)="closeModal()">
+          <ion-icon name="close" color="primary"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="content">
+  
+    <div class="image-wrapper" *ngIf="manifest">
+      <img [src]="manifest.customicon" alt="miniatura del OVA">
+    </div>
+    <div class="info-wrapper">
+      <div class="info-item" *ngIf="description">
+        <h4>Descripción:</h4>
+        <p>
+          {{ description }}
+        </p>
+      </div>
+      <div class="info-item" *ngIf="contributions && contributions.length">
+        <h4>Contribuciones:</h4>
+        <div class="contribution-item" *ngFor="let contribution of contributions">
+          <strong>{{ contribution.entity.name }} {{ contribution.entity.lastname }}</strong>
+          <br />
+          <span class="rol">{{ contribution.rol }}</span>
+          <br />
+          <span>{{ contribution.date.split('T')[0] }}</span>
+          <br />
+          <!-- <span class="company" [matTooltip]="contribution.entity.company"
+            [matTooltipDisabled]="!cropContributionCompanyLabel(contribution.entity.company)"></span>
+            {{ contribution.entity.company.length < 31 ? contribution.entity.company : contribution.entity.company.slice(0,30) }}
+            <span *ngIf="cropContributionCompanyLabel(contribution.entity.company)">...</span> -->
+          <span class="company">
+            {{ contribution.entity.company.length < 31 ? contribution.entity.company : contribution.entity.company.slice(0,30) }}
+          </span>
+        </div>
+      </div>
+      <div class="info-item" *ngIf="keywords && keywords?.join(', ').length">
+        <h4>Palabras clave:</h4>
+        <p>
+          {{ keywords?.join(', ') }}
+        </p>
+      </div>
+      <div class="info-item" *ngIf="publishDate">
+        <h4>Fecha de publicación:</h4>
+        <p>
+          {{ publishDate }}
+        </p>
+      </div>
+      <div class="info-item" *ngIf="format">
+        <h4>Formato:</h4>
+        <p>
+          {{ format }}
+        </p>
+      </div>
+      <div class="info-item copyright" *ngIf="rights && rights.copyright">
+        <h4>Licencia:</h4>
+        <p>
+          <img [src]="copyrightImageUrl" alt="">
+          <span class="version-wrapper" *ngIf="copyrightVersion">
+            Versión:
+            <br />
+            {{ copyrightVersion }}
+          </span>
+          <!-- <ion-icon name="open-outline"></ion-icon> -->
+          <!-- <a class="license-link" [href]="copyrightUrl" target="_blank"> -->
+          <!-- </a> -->
+        </p>
+      </div>
+
+    </div>
+  </div>
+</ion-content>

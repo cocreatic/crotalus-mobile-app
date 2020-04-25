@@ -1,3 +1,7 @@
+ion-content {
+  --background: var(--custom-background);
+}
+
 .title {
   font-size: 18px;
 }
@@ -6,16 +10,22 @@
   margin-top: 40px;
 }
 
+
 ion-item {
   --border-width: 0;
   --inner-border-width: 0;
 }
 
-.default-item-type-search {
-  
-  .content-wrapper .title {
+.content-wrapper{
+  width: 100%;
+  max-width: 400px;
+
+  .title {
     padding: 18px 0 9px;
   }
+}
+
+.default-item-type-search {
 
   .item-type-list {
 
@@ -34,4 +44,11 @@ ion-item {
       }
     }
     }
+}
+
+.reset-settings {
+  margin-top: 40px;
+  --padding-top: 25px;
+  --padding-bottom: 25px;
+  --box-shadow: none;
 }
