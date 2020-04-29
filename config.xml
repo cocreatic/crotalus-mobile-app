@@ -13,7 +13,7 @@
     <allow-intent href="geo:*" />
     <preference name="StatusBarOverlaysWebView" value="false" />
     <preference name="ScrollEnabled" value="false" />
-    <preference name="android-minSdkVersion" value="21" />
+    <preference name="android-minSdkVersion" value="23" />
     <preference name="BackupWebStorage" value="none" />
     <platform name="android">
         <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application" xmlns:android="http://schemas.android.com/apk/res/android">

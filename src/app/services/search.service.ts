@@ -79,7 +79,7 @@ export class SearchService {
 
   createRepositoryRequestUrl(value: string, repository: BoaRepository) {
     const repoCatalogues = repository.catalogs.map((catalog: BoaCatalog) => catalog.key).join('|');
-    return `${repository.api}/c/[${repoCatalogues}]/resources.json?q=${value}&${this.generateRequestParams()}`;
+    return `${repository.api}c/[${repoCatalogues}]/resources.json?q=${value}&${this.generateRequestParams()}`;
   }
 
   generateRequestParams() {

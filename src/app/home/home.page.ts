@@ -134,7 +134,9 @@ export class HomePage implements OnInit, AfterViewChecked {
 
   showNoMoreResults(): void {
     this.noMoreResults = true;
-    this.infiniteScroll.disabled = true;
+    if ( this.infiniteScroll ) {
+      this.infiniteScroll.disabled = true;
+    }
     this.presentToast(`Ooops!! No encontramos${this.results.length ? ' más' : ''} resultados`, 3000);
   }
 

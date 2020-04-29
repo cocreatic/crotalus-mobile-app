@@ -98,7 +98,12 @@ ion-header {
   opacity: 0.8;
   position: absolute;
   transform: translateY(25vh);
-  text-align: center;
+  width: 100%;
+
+  ion-card {
+    max-width: 600px;
+    margin: 0 auto;
+  }
   
   ion-card-title {
     font-family: "Cabin Sketch", cursive;

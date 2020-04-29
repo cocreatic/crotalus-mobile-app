@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/colorCrotalusPrimary"
+        android:gravity="center|clip_horizontal|clip_vertical"
+        android:height="1500dp"
+        android:width="1500dp"/>
+    <item android:drawable="@drawable/crotalus_splash" android:gravity="center"/>
+</layer-list>

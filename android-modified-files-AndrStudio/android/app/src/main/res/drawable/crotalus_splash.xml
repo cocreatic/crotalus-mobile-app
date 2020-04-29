@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/colorCrotalusPrimary" />
+    <item
+        android:top="60dp"
+        android:left="674dp"
+        android:right="674dp"
+        android:width="151dp"
+        android:height="180dp">
+            <bitmap android:src="@drawable/logo_crotalus"
+                android:gravity="fill|center_vertical|center_horizontal" />
+    </item>
+
+    <item
+        android:top="363dp"
+        android:height="147dp"
+        android:width="1499dp"
+        >
+        <shape android:shape="rectangle">
+            <solid android:color="#FFF" />
+        </shape>
+    </item>
+    <item
+        android:top="350dp"
+        android:left="547dp"
+        android:right="547dp"
+        android:width="405dp"
+        android:height="172dp">
+        <bitmap android:src="@drawable/logos_nobg"
+            android:gravity="fill|center_vertical|center_horizontal" />
+    </item>
+    <item
+        android:top="650dp"
+        android:bottom="10dp"
+        android:left="704dp"
+        android:right="704dp"
+        android:width="91dp"
+        android:height="37dp">
+        <bitmap android:src="@drawable/logo_bambuco"
+            android:gravity="fill|center_vertical|center_horizontal" />
+    </item>
+</layer-list>

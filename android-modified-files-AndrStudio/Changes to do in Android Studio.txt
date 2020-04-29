@@ -1,0 +1,48 @@
+1- Add usesCleartextTraffic to android manifest app -> manifests -> AndroidManifest.xml
+
+        <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
+
+
+
+2- Override onSart in main activity to fix system dark mode detection app -> java -> io.ionic.starter -> MainActivity.java
+
+        @Override
+        public void onStart() {
+          super.onStart();
+          // Android fix for enabling dark mode
+          int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+          WebSettings webSettings = this.bridge.getWebView().getSettings();
+          if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
+            String userAgent = webSettings.getUserAgentString();
+            userAgent = userAgent + " AndroidDarkMode";
+            webSettings.setUserAgentString(userAgent);
+          }
+        }
+
+
+
+3- Add Crotalus primary color in capacitor-android -> res -> values -> colors.xml
+
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+
+
+
+4- Modify theme AppTheme.NoActionBarLaunch app -> res -> values -> styles.xml
+
+        <style name="AppTheme.NoActionBarLaunch" parent="AppTheme.NoActionBar">
+            <item name="windowNoTitle">true</item>
+            <item name="windowActionBar">false</item>
+            <item name="android:windowFullscreen">true</item>
+            <item name="android:background">@drawable/splash</item>
+        </style>
+
+
+
+5- Replace Drawable folder and  mipmap folder for splashscreen and icons

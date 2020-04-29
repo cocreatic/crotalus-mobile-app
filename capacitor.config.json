@@ -7,16 +7,15 @@
   "plugins": {
     "SplashScreen": {
       "launchAutoHide": false,
-      "androidScaleType": "CENTER_CROP"
+      "androidScaleType": "CENTER",
+      "splashFullScreen": true,
+      "splashImmersive": true
     }
   },
   "cordova": {
     "StatusBarOverlaysWebView": "false",
     "ScrollEnabled": "false",
-    "android-minSdkVersion": "21",
+    "android-minSdkVersion": "23",
     "BackupWebStorage": "none"
-  },
-  "server": {
-    "cleartext": true
   }
 }
