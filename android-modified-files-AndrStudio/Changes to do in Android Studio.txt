@@ -1,4 +1,4 @@
-1- Add usesCleartextTraffic to android manifest app -> manifests -> AndroidManifest.xml
+1- Add usesCleartextTraffic to android manifest: app -> manifests -> AndroidManifest.xml
 
         <application
         android:allowBackup="true"
@@ -11,7 +11,7 @@
 
 
 
-2- Override onSart in main activity to fix system dark mode detection app -> java -> io.ionic.starter -> MainActivity.java
+2- Override onStart in main activity to fix system dark mode detection: app -> java -> io.ionic.starter -> MainActivity.java
 
         @Override
         public void onStart() {
@@ -28,13 +28,13 @@
 
 
 
-3- Add Crotalus primary color in capacitor-android -> res -> values -> colors.xml
+3- Add Crotalus primary color in: capacitor-android -> res -> values -> colors.xml
 
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
 
 
 
-4- Modify theme AppTheme.NoActionBarLaunch app -> res -> values -> styles.xml
+4- Modify theme AppTheme.NoActionBarLaunch: app -> res -> values -> styles.xml
 
         <style name="AppTheme.NoActionBarLaunch" parent="AppTheme.NoActionBar">
             <item name="windowNoTitle">true</item>
@@ -45,4 +45,4 @@
 
 
 
-5- Replace Drawable folder and  mipmap folder for splashscreen and icons
+5- Replace Drawable folder and mipmap folder for splashscreen and icons
