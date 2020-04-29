@@ -19,7 +19,7 @@ export class RepositoriesComponent implements OnInit, OnDestroy {
   nonConnectedRepositories: BoaRepository[];
   currentToast: null | HTMLIonToastElement = null;
 
-  registeredRepositoriesUrl = 'http://b.boaproject.net/index.json';
+  registeredRepositoriesUrl = 'http://b.cocreatic.org/index.json';
   registeredRepositories: any;
   initializing = true;
 
