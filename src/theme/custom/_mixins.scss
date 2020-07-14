@@ -1,0 +1,13 @@
+@mixin icon-size( $size: 24px) {
+  font-size: $size;
+  height: $size;
+  width: $size;
+  line-height: $size;
+}
+
+@mixin icon-label-color($color: var(--ion-color-primary)) {
+  ion-label, 
+  ion-icon {
+    color: $color;
+  }
+}

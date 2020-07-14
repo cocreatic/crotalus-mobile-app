@@ -11,7 +11,7 @@
 
 
 
-2- Override onStart in main activity to fix system dark mode detection: app -> java -> io.ionic.starter -> MainActivity.java
+2- Override onStart in main activity to fix system dark mode detection: app -> java -> boa.project.crotalus -> MainActivity.java
 
         @Override
         public void onStart() {
@@ -30,7 +30,7 @@
 
 3- Add Crotalus primary color in: capacitor-android -> res -> values -> colors.xml
 
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <color name="colorCrotalusPrimary">#673AB7</color>
 
 
 
@@ -45,4 +45,9 @@
 
 
 
-5- Replace Drawable folder and mipmap folder for splashscreen and icons
+5- Replace app -> res->:  Drawable folder and mipmap folder for splashscreen and icons
+
+    folder path: android -> app -> src -> main -> res
+
+6- Put ic_launcher_playstore in: android -> app -> src -> main
+

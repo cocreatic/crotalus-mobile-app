@@ -1,0 +1,97 @@
+.player-wrapper {
+
+  margin: 55px 10px 10px;
+  padding: 0px 30px;
+  
+  .actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+
+    .main-action {
+      --border-radius: 300px;
+      margin-left: 16px;
+      margin-right: 8px;
+      width: 58px;
+      height: 58px;
+      font-size: 15px;
+      --padding-start: 0px;
+      --padding-end: 0px;
+      --background: var(--audio-type-color);
+    }
+    
+    .secondary-action {
+      --border-radius: 300px;
+      width: 38px;
+      height: 38px;
+      font-size: 16px;
+      --padding-start: 0px;
+      --padding-end: 0px;
+      --color: var(--audio-type-color);
+    }
+
+  }
+
+  .slider-wrapper {
+    flex-grow: 1;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 2px;
+    transition: opacity 200ms ease-in-out;
+
+    ::ng-deep {
+      .mat-slider {
+        flex-grow: 1;
+        min-width: 80px;
+        margin: 0 2px;
+
+        &.cdk-mouse-focused .mat-slider-thumb,
+        &.cdk-touch-focused .mat-slider-thumb,
+        .mat-slider-thumb {
+          transform: scale(.6);
+        }
+
+        &.mat-accent .mat-slider-thumb,
+        &.mat-slider-min-value .mat-slider-thumb,
+        &.mat-accent .mat-slider-track-fill {
+          background-color: var(--audio-type-color);
+          border-color: var(--audio-type-color);
+        }
+        
+        &.mat-slider-disabled .mat-slider-thumb {
+          background-color: var(--ion-color-light-tint);
+          border-color: var(--ion-color-light-tint);
+        }
+
+        .mat-slider-track-background,
+        &:hover .mat-slider-track-background {
+          background-color: var(--ion-color-light-shade);
+        }
+
+        // &.smooth-marker {
+        //   .mat-slider-thumb-container {
+        //     transition: transform 1s linear;
+        //   }
+    
+        //   .mat-slider-track-fill,
+        //   .mat-slider-track-background {
+        //     transition: transform 1s linear, background-color 1s linear;
+        //   }
+        // }
+      }
+
+    }
+
+    &.loading {
+      opacity: 0.5;
+    }
+
+    ion-label {
+      margin: 0;
+      color: var(--ion-color-dark-tint) !important;
+    }
+  }
+}

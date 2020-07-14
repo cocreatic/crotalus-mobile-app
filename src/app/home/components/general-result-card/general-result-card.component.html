@@ -1,0 +1,61 @@
+<ion-card *ngIf="itemInfo" class="item-card">
+  <div class="content-wrapper">
+    <div class="top-info-bar" (click)="openDetails.emit()">
+      <ion-chip outline [ngClass]="{'image-type': itemInfo.type === searchTypes.image,
+      'video-type': itemInfo.type === searchTypes.video,
+      'audio-type': itemInfo.type === searchTypes.audio,
+      'document-type': itemInfo.type === searchTypes.document,
+      'didactic-unit-type': itemInfo.type === searchTypes.didacticUnit }">
+        <ion-icon [name]="getItemTypeIcon(itemInfo.type)"></ion-icon>
+        <ion-label>{{itemInfo.metadata.technical.format.split('/')[1]}}</ion-label>
+      </ion-chip>
+      <span class="repository-name">{{itemInfo.repositoryName}}</span>
+    </div>
+
+    <ion-grid>
+      <ion-row>
+        <ion-col size-xs="12" [attr.size-sm]="itemInfo.type === searchTypes.audio ? 12 : 8"
+          [attr.size-lg]="itemInfo.type === searchTypes.audio ? 12 : 9"
+          [attr.size-xlg]="itemInfo.type === searchTypes.audio ? 12 : 10" class="card-content-column">
+          <ion-card-header (click)="openDetails.emit()">
+            <ion-card-title>{{itemInfo.metadata.general.title.none}}</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <p>
+              <app-simple-audio-player class="audio-player" *ngIf="itemInfo.type === searchTypes.audio"
+                [audioSrc]="originalFileUrl" (playEvent)="playEvent.emit($event)"></app-simple-audio-player>
+            </p>
+            <p class="description" (click)="openDetails.emit()">{{itemInfo.metadata.general.description.none}}</p>
+            <p class="keywords ion-hide-sm-down" (click)="openDetails.emit()">
+              <em *ngIf="itemInfo.metadata.general.keywords && !!itemInfo.metadata.general.keywords.none.join(); else noKeywords"><strong>Palabras clave:
+                </strong>{{itemInfo.metadata.general.keywords.none.join(', ')}}</em>
+              <ng-template #noKeywords>
+                <em>Sin palabras clave definidas</em>
+              </ng-template>
+            </p>
+
+          </ion-card-content>
+        </ion-col>
+        <ion-col size-xs="12" size-sm="4" size-lg="3" size-xlg="2" class="card-thumbnail-column"
+          *ngIf="itemInfo.type !== searchTypes.audio" (click)="openDetails.emit()">
+          <ion-row>
+            <ion-col size-xs="7" class="ion-hide-sm-up">
+              <ion-card-content>
+                <p class="keywords" (click)="openDetails.emit()">
+                  <em *ngIf="itemInfo.metadata.general.keywords && !!itemInfo.metadata.general.keywords.none.join(); else noKeywords"><strong>Palabras clave:
+                    </strong>{{itemInfo.metadata.general.keywords.none.join(', ')}}</em>
+                  <ng-template #noKeywords>
+                    <em>Sin palabras clave definidas</em>
+                  </ng-template>
+                </p>
+              </ion-card-content>
+            </ion-col>
+            <ion-col size-xs="5" size-sm="12">
+              <img [src]="itemInfo.manifest.customicon" alt="miniatura del recurso">
+            </ion-col>
+          </ion-row>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+</ion-card>

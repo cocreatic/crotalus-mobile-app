@@ -1,7 +1,15 @@
+import { DownloadService } from './../../../services/download.service';
 import { SearchService } from './../../../services/search.service';
 import { BoaResource, BoaResourceManifest, Contribution, BoaResourceSocial } from './../../../models/boa-resource.interface';
 import { Component, OnInit, Input } from '@angular/core';
-import { ModalController, NavParams } from '@ionic/angular';
+import { ModalController, ToastController } from '@ionic/angular';
+import * as Helpers from "../../../helpers";
+import { SearchTypes } from 'src/app/models/search-type.enum';
+import { SocialSharing } from '@ionic-native/social-sharing/ngx';
+import { ActionSheetController } from '@ionic/angular';
+import { FileOpener } from '@ionic-native/file-opener/ngx';
+import { getResourceType } from '../../../helpers';
+import { FileEntry } from '@ionic-native/file/ngx';
 
 @Component({
   selector: 'app-details-modal',
@@ -12,6 +20,7 @@ export class DetailsModalComponent implements OnInit {
 
   @Input() itemAboutString: string;
 
+  searchTypes = SearchTypes;
   itemData: BoaResource;
   manifest: BoaResourceManifest;
   title: string;
@@ -32,12 +41,23 @@ export class DetailsModalComponent implements OnInit {
   showTopInfo = false;
   showVideoError = false;
   titleIcon: string;
+  audioSrc: string;
+  downloadItems: any[];
   readonly MAX_COMPANY_LABEL_LENGTH = 30;
+  currentToast: null | HTMLIonToastElement = null;
+
 
   constructor(
     private searchService: SearchService,
     private modalController: ModalController,
-  ) { }
+    private socialSharing: SocialSharing,
+    private actionSheetController: ActionSheetController,
+    private downloadService: DownloadService,
+    private fileOpener: FileOpener,
+    public toastController: ToastController,
+  ) {
+
+  }
 
   ngOnInit() {
     this.searchService.getResourceAbout(this.itemAboutString).subscribe((response: BoaResource) => {
@@ -51,18 +71,21 @@ export class DetailsModalComponent implements OnInit {
     this.alternateBaseRef = this.itemData.id.split('/content/')[1];
     this.manifest = this.itemData.manifest;
     this.format = metadata.technical.format;
-    this.itemType = this.format.split('/')[0];
+    this.itemType = getResourceType(this.itemData);
     this.title = metadata.general.title.none;
-    this.titleIcon = this.getIconType();
+    this.titleIcon = Helpers.getItemTypeIcon(this.itemType);
     this.description = metadata.general.description.none;
-    this.imageSrc = `${this.itemAboutString }/!/.alternate/${this.alternateBaseRef}/${this.manifest.alternate[1]}`;
+    this.imageSrc = `${this.itemAboutString}/!/.alternate/${this.alternateBaseRef}/${this.manifest.alternate[1]}`;
     this.keywords = metadata.general.keywords.none;
-    this.contributions = metadata.lifecycle.contribution;
+    this.contributions = metadata.lifecycle && metadata.lifecycle.contribution;
     this.publishDate = this.manifest.lastpublished.split('T')[0];
     this.rights = metadata.rights;
     this.social = this.itemData.social;
     this.entrypointName = this.manifest.hasOwnProperty('entrypoint') ? this.manifest.entrypoint.split('.')[0] : '';
     this.alternates = [...this.alternates, ...this.manifest.alternate];
+    if (this.itemType === this.searchTypes.audio) {
+      this.audioSrc = this.originalFileUrl;
+    }
   }
 
   cropContributionCompanyLabel(company: string): any {
@@ -70,19 +93,103 @@ export class DetailsModalComponent implements OnInit {
   }
 
   closeModal(): void {
+    this.dismissCurrentToast();
     this.modalController.dismiss();
   }
 
-  getIconType(): string {
-    switch (this.itemType) {
-      case 'image':
-        return 'image';
+  getResourceDownloadUrl(size: string): string {
+    if (size === 'original') {
+      return this.originalFileUrl;
+    } else {
+      return `${this.itemAboutString}/!/.alternate/${this.alternateBaseRef}/${size}`;
+    }
+  }
 
-      case 'video':
-        return 'videocam';
+  getSizeLabel(size: string) {
+    return Helpers.getSizeLabel(size);
+  }
 
-      default:
-        break;
+  share(): void {
+    const options = {
+      message: 'Hola!!, mira este recurso:', // not supported on some apps (Facebook, Instagram)
+      url: this.itemAboutString,
+    };
+    this.socialSharing.shareWithOptions(options)
+      // .then(result => { this.onShareSuccess(result) })
+      .catch(error => { this, this.onShareError(error) });
+  }
+
+  onShareError = (msg) => {
+    console.log("Sharing failed with message: " + msg);
+  };
+
+  async download(resource: any): Promise<FileEntry> {
+    const fileNameInUrl: string = resource.url.slice(resource.url.lastIndexOf('/') + 1);
+    let fileName = this.manifest.title ? this.manifest.title.slice(0, this.manifest.title.lastIndexOf('.')) : this.title;
+    let fileNameExt: string;
+    if (fileNameInUrl) {
+      fileNameExt = fileNameInUrl.split('.').pop();
+    } else {
+      fileNameExt = this.format.split('/')[1];
+    }
+    return this.downloadService.download(resource, fileName, fileNameExt, this.itemType);
+  }
+
+  async openPdf() {
+    const resource = {
+      name: '',
+      url: this.getResourceDownloadUrl('original'),
+    }
+    const downloadedFile = await this.download(resource);
+    console.log(downloadedFile);
+    this.fileOpener.open(downloadedFile.toURL(), 'application/pdf')
+      .then(result => {console.log(result);})
+      .catch(error => { console.error(error) });
+  }
+
+  async presentActionSheet() {
+    if (this.format === 'text/html') {
+      this.presentToast('Este tipo de recurso no está disponible para descarga', 2000);
+      return;
+    }
+    
+    if (!this.downloadItems) {
+      this.downloadItems = this.alternates.map(alternate => ({
+        text: this.getSizeLabel(alternate),
+        url: this.getResourceDownloadUrl(alternate),
+        icon: 'chevron-forward',
+        handler: () => this.download({ alternateName: this.getSizeLabel(alternate), url: this.getResourceDownloadUrl(alternate) })
+      }));
+    }
+
+    const actionSheet = await this.actionSheetController.create({
+      header: 'Descargas por tamaño',
+      cssClass: 'download-action-sheet',
+      buttons: [{
+        text: 'Cancelar',
+        role: 'cancel',
+        icon: 'close',
+        handler: () => {
+          console.log('Cancel clicked');
+        }
+      }, ...this.downloadItems]
+    });
+    await actionSheet.present();
+  }
+
+  async presentToast(message: string, duration: number) {
+    await this.dismissCurrentToast();
+    this.currentToast = await this.toastController.create({
+      message,
+      duration
+    });
+    this.currentToast.present();
+    this.currentToast.onDidDismiss().then(() => { this.currentToast = null; });
+  }
+
+  async dismissCurrentToast(): Promise<void> {
+    if (this.currentToast) {
+      await this.currentToast.dismiss();
     }
   }
 
@@ -101,5 +208,22 @@ export class DetailsModalComponent implements OnInit {
     } else {
       return this.rights.copyright.split(' ').pop();
     }
+  }
+
+  // TODO: Unify all getOriginalFile used within multiple components.
+  get originalFileUrl(): string {
+    if (this.manifest.hasOwnProperty('entrypoint')) {
+      return `${this.itemAboutString}/!/${this.manifest.entrypoint}`;
+    }
+
+    if (this.manifest.hasOwnProperty('url') && this.manifest.url) {
+      return this.manifest.url;
+    }
+
+    return `${this.itemAboutString}/!/`;
+  }
+
+  get showDocumentPlayer(): boolean {
+    return (this.format === 'text/html' || this.format === 'application/pdf')
   }
 }

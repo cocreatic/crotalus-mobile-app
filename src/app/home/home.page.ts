@@ -1,3 +1,6 @@
+import { License } from './../models/license.interface';
+import { LICENSES } from './../models/licenses.const';
+import { SearchTypes } from './../models/search-type.enum';
 import { Observable } from 'rxjs';
 import { DetailsModalComponent } from './components/details-modal/details-modal.component';
 import { BoaResource } from './../models/boa-resource.interface';
@@ -5,6 +8,9 @@ import { Component, ChangeDetectorRef, ViewChild, ElementRef, AfterViewChecked, 
 import { SearchService } from '../services/search.service';
 import { IonInfiniteScroll, ToastController, ModalController } from '@ionic/angular';
 import { Plugins, PluginListenerHandle } from '@capacitor/core';
+import { Storage } from '@ionic/storage';
+import { StorageKeys } from '../models/storageKeys.enum';
+import { MenuController } from '@ionic/angular';
 
 const { Keyboard, App } = Plugins;
 
@@ -15,7 +21,8 @@ const { Keyboard, App } = Plugins;
 })
 export class HomePage implements OnInit, AfterViewChecked {
 
-  valueToSearch: string;
+  // valueToSearch: string;
+  valueToSearch: string = '*a*';
   lastValueSearched: string;
   results: any[];
   resultsSize: number;
@@ -23,7 +30,6 @@ export class HomePage implements OnInit, AfterViewChecked {
   searchDone = false;
   isSearching = false;
   noMoreResults = false;
-  searchAvailableFilters: string[];
   pristine = true;
   addSearchToHeader = false;
   searchBoxBottomPosition: number;
@@ -33,9 +39,19 @@ export class HomePage implements OnInit, AfterViewChecked {
   showSpinner = true;
   showSearch: boolean;
   showNoRepos: boolean;
+  searchType: SearchTypes;
+  searchTypes = SearchTypes;
+  componentInitializing = true;
+  audioCurrentlyPlaying: HTMLAudioElement | null = null;
+  menuIsOpened: boolean;
+  licenses: License[];
+  activeLicensesCount: number;
+  disableLastActiveLicense: boolean;
+
 
   backButtonCounter = 0;
   backButtonEventlistener: PluginListenerHandle;
+
 
   @ViewChild(IonInfiniteScroll, { static: false }) infiniteScroll: IonInfiniteScroll;
   @ViewChild('searchBarWrapper', { static: false }) searchBox: ElementRef<HTMLElement>;
@@ -46,17 +62,16 @@ export class HomePage implements OnInit, AfterViewChecked {
     private searchService: SearchService,
     private changeDetector: ChangeDetectorRef,
     public toastController: ToastController,
-    public modalController: ModalController
+    private menuController: MenuController,
+    public modalController: ModalController,
+    private storage: Storage,
   ) {
     this.resultsSize = this.searchService.options.resultsResponseSize;
     this.minLetters = this.searchService.options.minLetters;
-    this.searchAvailableFilters = this.searchService.filters.filter(
-      filterObject => filterObject.meta === 'metadata.technical.format'
-    )[0].value;
   }
 
-  ngOnInit(): void {
-    this.searchService.reposConnectedNumber.subscribe((val) => {
+  async ngOnInit(): Promise<void> {
+    this.searchService.reposConnectedNumber$.subscribe((val) => {
       this.showSpinner = false;
       if (val) {
         this.initSearch();
@@ -73,6 +88,20 @@ export class HomePage implements OnInit, AfterViewChecked {
         this.showNoRepos = true;
       }
     });
+
+    this.searchService.getLicenses().subscribe((licenses: License[]) => {
+      this.licenses = licenses;
+      this.activeLicensesCount = this.licenses.filter(license => license.active).length;
+      this.disableLastActiveLicense = this.activeLicensesCount === 1;
+    })
+
+    this.searchType = await this.getDefaultSearchType();
+  }
+  
+
+  async getDefaultSearchType(): Promise<SearchTypes> {
+    const val = await this.storage.get(StorageKeys.defaultSearchType);
+    return val ? val : SearchTypes.all;
   }
 
 
@@ -80,7 +109,25 @@ export class HomePage implements OnInit, AfterViewChecked {
     if (!this.headerHeight) {
       this.headerHeight = this.headerBox.el.offsetHeight;
       this.content.el.style.setProperty('--padding-top', `${this.headerHeight}px`);
+      this.content.el.style.setProperty('--licenses-menu-margin-top', `${this.headerHeight}px`);
     }
+  }
+
+  async openLicensesMenu(): Promise<void> {
+    if (this.menuIsOpened) {
+      this.menuController.close('licencesMenu');
+    } else {
+      this.menuController.open('licencesMenu');
+    }
+  }
+
+  setMenuState(open: boolean): void {
+    this.menuIsOpened = open;
+  }
+
+  setMenuMarginTop(): void {
+    const headerHeight = this.headerBox.el.offsetHeight;
+    this.content.el.style.setProperty('--licenses-menu-margin-top', `${headerHeight}px`);
   }
 
 
@@ -112,21 +159,27 @@ export class HomePage implements OnInit, AfterViewChecked {
       Keyboard.hide();
     }
     this.isSearching = true;
-    this.searchService.search(this.valueToSearch, firstCall).then((searchRequest: Observable<any>) => {
+    this.searchService.search(this.valueToSearch, firstCall, this.searchType).then((searchRequest: Observable<any>) => {
       searchRequest.subscribe((results: BoaResource[]) => {
         this.searchDone = true;
         this.isSearching = false;
         if (this.infiniteScroll) {
           this.infiniteScroll.complete();
         }
-        const lastResults = results.flat();
+        const lastResults = results.flat().filter((resource: BoaResource) => resource.type);
         if (lastResults.length > 0 && lastResults.length < this.resultsSize) {
           this.results.push(...lastResults);
           this.showNoMoreResults();
         } else if (lastResults.length === 0) {
           this.showNoMoreResults();
         } else {
-          this.results.push(...lastResults);
+          if (this.searchType === SearchTypes.image) {
+            // debugger;
+            this.results = [...this.results, ...lastResults];
+          } else {
+            this.results.push(...lastResults);
+          }
+          // this.changeDetector.detectChanges();
         }
       });
     });
@@ -134,7 +187,7 @@ export class HomePage implements OnInit, AfterViewChecked {
 
   showNoMoreResults(): void {
     this.noMoreResults = true;
-    if ( this.infiniteScroll ) {
+    if (this.infiniteScroll) {
       this.infiniteScroll.disabled = true;
     }
     this.presentToast(`Ooops!! No encontramos${this.results.length ? ' más' : ''} resultados`, 3000);
@@ -167,32 +220,6 @@ export class HomePage implements OnInit, AfterViewChecked {
     }
   }
 
-  getItemTypeIcon(itemType): string {
-    switch (itemType) {
-      case 'image':
-        return 'image';
-
-      case 'video':
-        return 'videocam';
-
-      default:
-        return 'cube';
-    }
-  }
-
-  getItemTypeLabel(itemType): string {
-    switch (itemType) {
-      case 'image':
-        return 'Imagen';
-
-      case 'video':
-        return 'Video';
-
-      default:
-        return 'OVA';
-    }
-  }
-
   shouldAddSearchToHeader(event) {
     if (
       !this.addSearchToHeader &&
@@ -206,6 +233,7 @@ export class HomePage implements OnInit, AfterViewChecked {
   }
 
   async openDetails(item: BoaResource): Promise<void> {
+    this.shouldClearAudioPlaying();
     const modal = await this.modalController.create({
       component: DetailsModalComponent,
       componentProps: {
@@ -219,7 +247,6 @@ export class HomePage implements OnInit, AfterViewChecked {
       this.setBackButtonListener();
     });
   }
-
 
   setBackButtonListener(): void {
     this.backButtonCounter = 0;
@@ -236,6 +263,46 @@ export class HomePage implements OnInit, AfterViewChecked {
     });
   }
 
+  async ionViewWillEnter() {
+
+    if (this.componentInitializing) {
+      this.componentInitializing = false;
+      return;
+    }
+
+    // TODO: remove, just for demonstration
+
+    this.initSearch();
+
+    const defaultSearchType = await this.getDefaultSearchType();
+    if (this.searchType && this.searchType !== defaultSearchType) {
+      this.searchType = defaultSearchType;
+    }
+  }
+
+  playEvent(event: HTMLAudioElement): void {
+    const audioPlayer = event;
+    if (this.audioCurrentlyPlaying && !audioPlayer.paused) {
+      this.audioCurrentlyPlaying.pause();
+      this.audioCurrentlyPlaying.currentTime = 0;
+      this.audioCurrentlyPlaying = audioPlayer;
+    } else if (!this.audioCurrentlyPlaying && !audioPlayer.paused) {
+      this.audioCurrentlyPlaying = audioPlayer;
+    }
+  }
+
+  shouldClearAudioPlaying(): void {
+    if (this.audioCurrentlyPlaying) {
+      this.clearAudioCurrentlyPlaying();
+    }
+  }
+
+  clearAudioCurrentlyPlaying(): void {
+    this.audioCurrentlyPlaying.pause();
+    this.audioCurrentlyPlaying.currentTime = 0;
+    this.audioCurrentlyPlaying = null;
+  }
+
   ionViewWillLeave(): void {
     this.dismissCurrentToast();
   }
@@ -248,4 +315,19 @@ export class HomePage implements OnInit, AfterViewChecked {
     this.backButtonEventlistener.remove();
   }
 
+  setSearchType(type: SearchTypes): void {
+    this.searchType = type;
+
+    if (this.results && this.results.length) {
+      this.search(true);
+    }
+  }
+
+  updateActiveLicenses(active: boolean, license: any) {
+    this.searchService.updateActiveLicenses(license, active)
+  }
+
+  get showActiveLicensesCount(): boolean {
+    return this.activeLicensesCount &&  this.activeLicensesCount < this.licenses.length;
+  }
 }

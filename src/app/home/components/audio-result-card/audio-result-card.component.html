@@ -1,0 +1,20 @@
+<ion-card *ngIf="audioItem">
+  <ion-card-header (click)="openDetails.emit()">
+    <span class="repository-name">{{audioItem.repositoryName}}</span>
+    <ion-card-title>{{metadata.general.title.none}}</ion-card-title>
+  </ion-card-header>
+  <div class="audio-player">
+    <!-- <mat-basic-audio-player [audioUrl]="audioSource" [title]="''" [autoPlay]="false" 
+    [displayTitle]="'false'" [displayVolumeControls]="'true'" ></mat-basic-audio-player> -->
+
+    <app-simple-audio-player class="audio-player" [audioSrc]="audioSource" (playEvent)="playEvent.emit($event)"></app-simple-audio-player>
+
+    <!-- <audio controls>
+      <source [src]="audioSource" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio> -->
+  </div>
+  <ion-card-content (click)="openDetails.emit()">
+    <p class="description">{{metadata.general.description.none}}</p>
+  </ion-card-content>
+</ion-card>

@@ -1,0 +1,15 @@
+<ion-card *ngIf="videoItem" (click)="openDetails.emit()">
+  <div class="thumbnail-wrapper" (mouseenter) = "togglePreview(true)" (mouseleave) = "togglePreview(false)">
+    <app-image-loader 
+      [imageSrc]="thumbnailSrc"
+      [altText]="thumbnailAltText"
+      imageBorderRadius="'4px 4px 0 0'"
+      (imageLoadFailed)="imageLoadError()"
+    ></app-image-loader>
+    <div class="preview-box" [class.active]="showPreview" #previewBox></div>
+  </div>
+  <ion-card-header>
+    <span class="repository-name">{{videoItem.repositoryName}}</span>
+    <ion-card-title>{{metadata.general.title.none}}</ion-card-title>
+  </ion-card-header>
+</ion-card>

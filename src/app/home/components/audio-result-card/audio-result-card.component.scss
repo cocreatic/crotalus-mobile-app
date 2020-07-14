@@ -1,0 +1,78 @@
+@import "responsive-breakpoints";
+
+/** TODO: create mixin for display and margin */
+ion-card {
+  display: inline-block;
+  margin: 0 30px 30px;
+  max-width: 450px;
+
+  @media #{$xsmall} {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+}
+
+ion-card-header {
+  padding: 18px 16px 8px;
+
+  span.repository-name {
+    color: var(--ion-color-medium-tint);
+    font-size: 15px;
+    font-weight: 300; 
+  }
+  
+  ion-card-title {
+    font-size: 18px;
+    font-family: "Cabin Sketch", cursive;
+    font-weight: bold;
+    letter-spacing: 0.01em;
+    margin-top: 2px;
+  }
+}
+
+.audio-player {
+  padding: 0 16px;
+}
+
+p.description {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+// :host .audio-player {
+//   ::ng-deep mat-basic-audio-player {
+//     .mat-card {
+//       background-color: transparent;
+//       box-shadow: none;
+//     }
+
+//     // .mat-slider-horizontal .mat-slider-wrapper {
+//     //   left: 0;
+//     // }
+
+//     .mat-slider-min-value .mat-slider-thumb,
+//     .mat-slider-thumb {
+//       // border: 0;
+//       // background-color: var(--ion-color-primary);
+//       // width: 17px;
+//       // height: 17px;
+//       // bottom: -8px;
+//       // right: -9px;
+//     }
+
+//     .mat-slider-track-fill {
+//       background-color: var(--ion-color-primary);;
+//     }
+
+//     .mat-button {
+//       border-radius: 4px;
+
+//       & .ngx-basic-audio-player-button-handler {
+//         min-width: 48px;
+//         padding: 0;
+//       }
+//     }
+//   }
+// }

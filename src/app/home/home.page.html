@@ -1,24 +1,29 @@
-<ion-content 
-  #content
-  [fullscreen]="true"
-  scrollEvents="true"
-  (ionScroll)="shouldAddSearchToHeader($event)"
-  appHideHeader
-  [header]="header"
-  [searchVisibleInHeader]="addSearchToHeader"
->
-  <ion-header [translucent]="true" #header slot="fixed">
-    <ion-toolbar class="title-toolbar">
+<ion-content #content [fullscreen]="true" scrollEvents="true" (ionScroll)="shouldAddSearchToHeader($event)"
+  appHideHeader [header]="header" [searchVisibleInHeader]="addSearchToHeader">
+  <ion-header class="main-header" [translucent]="true" #header slot="fixed">
+    <ion-toolbar class="title-toolbar" [ngClass]="{'all-type': searchType === searchTypes.all,
+    'image-type': searchType === searchTypes.image,
+    'video-type': searchType === searchTypes.video,
+    'audio-type': searchType === searchTypes.audio,
+    'document-type': searchType === searchTypes.document,
+    'didactic-unit-type': searchType === searchTypes.didacticUnit,
+    'small-padding': addSearchToHeader }">
       <ion-buttons slot="start">
-        <ion-button color="secondary" [routerLink]="['/settings/appearance']">
+        <ion-button [routerLink]="['/settings/appearance']">
           <ion-icon slot="icon-only" name="settings"></ion-icon>
         </ion-button>
       </ion-buttons>
-      <!-- <ion-buttons slot="end">
-        <ion-button color="secondary">
-          <ion-icon slot="icon-only" name="funnel"></ion-icon>
+      <ion-buttons slot="end">
+        <ion-button (click)="openLicensesMenu()" class="licenses-filter-button">
+          <ng-container *ngIf="!menuIsOpened;else closeMenuTemplate">
+            <ion-icon slot="icon-only" name="funnel"></ion-icon>
+            <ion-badge class="active-licenses-count" *ngIf="showActiveLicensesCount" slot="end">{{activeLicensesCount}}</ion-badge>
+          </ng-container>
+          <ng-template #closeMenuTemplate>
+            <ion-icon slot="icon-only" name="close"></ion-icon>
+          </ng-template>
         </ion-button>
-      </ion-buttons> -->
+      </ion-buttons>
 
       <ion-title>
         <div class="app-title">
@@ -32,10 +37,48 @@
       </ion-title>
     </ion-toolbar>
 
-    <div class="search-area" *ngIf="addSearchToHeader" >
-      <ion-input clearInput type="search" name="search-value" inputmode="search" placeholder="Ingresa tu búsqueda" autocomplete="true" [(ngModel)]="valueToSearch" (keyup.enter)="search(true)"></ion-input>
-      <ion-button (click)="search(true)" fill="solid">
+    <div class="search-area" *ngIf="addSearchToHeader">
+      <ion-input clearInput type="search" name="search-value" inputmode="search" placeholder="Ingresa tu búsqueda"
+        autocomplete="true" [(ngModel)]="valueToSearch" (keyup.enter)="search(true)"></ion-input>
+      <ion-button (click)="search(true)" fill="solid" [ngClass]="{'all-type': searchType === searchTypes.all,
+      'image-type': searchType === searchTypes.image,
+      'video-type': searchType === searchTypes.video,
+      'audio-type': searchType === searchTypes.audio,
+      'document-type': searchType === searchTypes.document,
+      'didactic-unit-type': searchType === searchTypes.didacticUnit }">
         <ion-icon name="search-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </div>
+
+    <div class="type-selection-wrapper" *ngIf="addSearchToHeader" [class.pristine]="pristine" [ngClass]="{'all-type': searchType === searchTypes.all,
+    'image-type': searchType === searchTypes.image,
+    'video-type': searchType === searchTypes.video,
+    'audio-type': searchType === searchTypes.audio,
+    'document-type': searchType === searchTypes.document,
+    'didactic-unit-type': searchType === searchTypes.didacticUnit }">
+      <ion-button class="all-type" [class.active]="searchType === searchTypes.all" fill="clear"
+        (click)="setSearchType(searchTypes.all)">
+        <ion-label>Todo</ion-label>
+      </ion-button>
+      <ion-button class="image-type" [class.active]="searchType === searchTypes.image" fill="clear"
+        (click)="setSearchType(searchTypes.image)">
+        <ion-icon slot="icon-only" name="image"></ion-icon>
+      </ion-button>
+      <ion-button class="video-type" [class.active]="searchType === searchTypes.video" fill="clear"
+        (click)="setSearchType(searchTypes.video)">
+        <ion-icon slot="icon-only" name="videocam"></ion-icon>
+      </ion-button>
+      <ion-button class="audio-type" [class.active]="searchType === searchTypes.audio" fill="clear"
+        (click)="setSearchType(searchTypes.audio)">
+        <ion-icon slot="icon-only" name="volume-medium"></ion-icon>
+      </ion-button>
+      <ion-button class="document-type" [class.active]="searchType === searchTypes.document" fill="clear"
+        (click)="setSearchType(searchTypes.document)">
+        <ion-icon slot="icon-only" name="document"></ion-icon>
+      </ion-button>
+      <ion-button class="didactic-unit-type" [class.active]="searchType === searchTypes.didacticUnit" fill="clear"
+        (click)="setSearchType(searchTypes.didacticUnit)">
+        <ion-icon slot="icon-only" name="people"></ion-icon>
       </ion-button>
     </div>
   </ion-header>
@@ -43,25 +86,99 @@
 
   <div id="container">
 
+    <ion-menu side="end" type="overlay" menuId="licencesMenu" contentId="sideMenu" swipeGesture="false"
+      (ionDidClose)="setMenuState(false)" (ionDidOpen)="setMenuState(true)" (ionWillOpen)="setMenuMarginTop()">
+      <ion-toolbar>
+        <ion-title>Buscar por licencia:</ion-title>
+      </ion-toolbar>
+      <ion-content class="licenses-menu" [ngClass]="{'all-type': searchType === searchTypes.all,
+      'image-type': searchType === searchTypes.image,
+      'video-type': searchType === searchTypes.video,
+      'audio-type': searchType === searchTypes.audio,
+      'document-type': searchType === searchTypes.document,
+      'didactic-unit-type': searchType === searchTypes.didacticUnit }">
+        <ion-list>
+
+          <ion-item *ngFor="let license of licenses">
+            <ion-checkbox [checked]="license.active" [disabled]="disableLastActiveLicense && license.active"
+              (ionChange)="updateActiveLicenses($event.detail.checked, license.value)"></ion-checkbox>
+            <ion-label>
+              <img [src]="license.imagePath" [alt]="license.value">
+              <p>{{license.description}}</p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-content>
+    </ion-menu>
+
+    <ion-router-outlet id="sideMenu"></ion-router-outlet>
+
+
+
+
+
     <div class="background" [class.dimmed]="results && results.length"></div>
     <div class="first-search-indicator">
       <ion-spinner *ngIf="isSearching" name="dots"></ion-spinner>
     </div>
     <ion-spinner *ngIf="showSpinner; else contentTemplate"></ion-spinner>
 
-    
+
     <ng-template #contentTemplate>
 
       <div class="search-area" [class.pristine]="pristine" #searchBarWrapper *ngIf="showSearch">
-      <!-- <div class="search-area" [class.pristine]="pristine" #searchBarWrapper > -->
-        <ion-input clearInput type="search" name="search-value" inputmode="search" placeholder="Ingresa tu búsqueda" autocomplete="true" [(ngModel)]="valueToSearch" (keyup.enter)="search(true)"></ion-input>
-        <ion-button (click)="search(true)" fill="solid">
+        <!-- <div class="search-area" [class.pristine]="pristine" #searchBarWrapper > -->
+        <ion-input clearInput type="search" name="search-value" inputmode="search" placeholder="Ingresa tu búsqueda"
+          autocomplete="true" [(ngModel)]="valueToSearch" (keyup.enter)="search(true)"></ion-input>
+        <ion-button (click)="search(true)" fill="solid" [ngClass]="{'all-type': searchType === searchTypes.all,
+          'image-type': searchType === searchTypes.image,
+          'video-type': searchType === searchTypes.video,
+          'audio-type': searchType === searchTypes.audio,
+          'document-type': searchType === searchTypes.document,
+          'didactic-unit-type': searchType === searchTypes.didacticUnit }">
           <ion-icon name="search-outline" slot="icon-only"></ion-icon>
           <span *ngIf="pristine">Buscar</span>
         </ion-button>
       </div>
-  
-      <div class="no-connected-repos"*ngIf="showNoRepos">
+
+
+
+
+      <div class="type-selection-wrapper" [class.pristine]="pristine" [ngClass]="{'all-type': searchType === searchTypes.all,
+                    'image-type': searchType === searchTypes.image,
+                    'video-type': searchType === searchTypes.video,
+                    'audio-type': searchType === searchTypes.audio,
+                    'document-type': searchType === searchTypes.document,
+                    'didactic-unit-type': searchType === searchTypes.didacticUnit }">
+        <ion-button class="all-type" [class.active]="searchType === searchTypes.all" fill="clear"
+          (click)="setSearchType(searchTypes.all)">
+          <ion-label>Todo</ion-label>
+        </ion-button>
+        <ion-button class="image-type" [class.active]="searchType === searchTypes.image" fill="clear"
+          (click)="setSearchType(searchTypes.image)">
+          <ion-icon slot="icon-only" name="image"></ion-icon>
+        </ion-button>
+        <ion-button class="video-type" [class.active]="searchType === searchTypes.video" fill="clear"
+          (click)="setSearchType(searchTypes.video)">
+          <ion-icon slot="icon-only" name="videocam"></ion-icon>
+        </ion-button>
+        <ion-button class="audio-type" [class.active]="searchType === searchTypes.audio" fill="clear"
+          (click)="setSearchType(searchTypes.audio)">
+          <ion-icon slot="icon-only" name="volume-medium"></ion-icon>
+        </ion-button>
+        <ion-button class="document-type" [class.active]="searchType === searchTypes.document" fill="clear"
+          (click)="setSearchType(searchTypes.document)">
+          <ion-icon slot="icon-only" name="document"></ion-icon>
+        </ion-button>
+        <ion-button class="didactic-unit-type" [class.active]="searchType === searchTypes.didacticUnit" fill="clear"
+          (click)="setSearchType(searchTypes.didacticUnit)">
+          <ion-icon slot="icon-only" name="people"></ion-icon>
+        </ion-button>
+      </div>
+
+
+
+      <div class="no-connected-repos" *ngIf="showNoRepos">
         <ion-card>
           <ion-card-header>
             <ion-card-title>No hay repositorios conectados para realizar la búsqueda.</ion-card-title>
@@ -69,7 +186,7 @@
           <ion-card-content>
             <p>
               Para conectar un repositorio debes ir a la configuración, sección repositorios <br><br>
-              (<ion-icon name="settings"></ion-icon>&nbsp;&nbsp;->&nbsp;&nbsp; Repositorios)  
+              (<ion-icon name="settings"></ion-icon>&nbsp;&nbsp;->&nbsp;&nbsp; Repositorios)
             </p>
             <!-- <ion-button color="primary" fill="clear" [routerLink]="['/settings/repositories']">
             Configurar
@@ -80,50 +197,41 @@
       </div>
 
     </ng-template>
-    
 
-    
 
     <div *ngIf="results && results.length" class="results">
-      <ion-card class="item-card" *ngFor="let result of results" (click)="openDetails(result)">
-        <div class="content-wrapper">
-          <div class="top-info-bar">
-            <ion-chip outline color="primary">
-              <ion-icon [name]="getItemTypeIcon(result.type)"></ion-icon>
-              <ion-label>{{getItemTypeLabel(result.type)}}</ion-label>
-            </ion-chip>
-            <span class="repository-name">{{result.repositoryName}}</span>
-          </div>
-          <ion-grid>
-            <ion-row>
-              <ion-col size-xs="12" size-sm="8" size-lg="9" size-xlg="10" class="card-content-column">
-                <ion-card-header>
-                  <ion-card-title>{{result.metadata.general.title.none}}</ion-card-title>
-                </ion-card-header>
-                <ion-card-content>
-                  <p class="description">{{result.metadata.general.description.none}}</p>
-                  <p class="keywords ion-hide-sm-down" *ngIf="result.metadata.general.keywords"><em><strong>Palabras clave:
-                      </strong>{{result.metadata.general.keywords.none.join(', ')}}</em></p>
-                </ion-card-content>
-              </ion-col>
-              <ion-col size-xs="12" size-sm="4" size-lg="3" size-xlg="2" class="card-thumbnail-column">
-                <ion-row>
-                  <ion-col size-xs="7" class="ion-hide-sm-up">
-                    <ion-card-content>
-                      <p class="keywords" *ngIf="result.metadata.general.keywords"><em><strong>Palabras clave:
-                          </strong>{{result.metadata.general.keywords.none.join(', ')}}</em></p>
-                    </ion-card-content>
-                  </ion-col>
-                  <ion-col size-xs="5" size-sm="12">
-                    <img [src]="result.manifest.customicon" alt="miniatura del OVA">
-                  </ion-col>
-                </ion-row>
-              </ion-col>
-            </ion-row>
-          </ion-grid>
+
+      <ng-container [ngSwitch]="searchType">
+
+        <app-image-search-results *ngSwitchCase="searchTypes.image" [results]="results"
+          (openDetails)="openDetails($event)"></app-image-search-results>
+
+        <div class="video-results-wrapper" *ngSwitchCase="searchTypes.video">
+          <app-video-result-card *ngFor="let result of results" [videoItem]="result"
+            (openDetails)="openDetails(result)"></app-video-result-card>
         </div>
-      </ion-card>
-      <ion-infinite-scroll threshold="50px" (ionInfinite)="bottomReached()">
+
+        <div class="audio-results-wrapper" *ngSwitchCase="searchTypes.audio">
+          <app-audio-result-card *ngFor="let result of results" [audioItem]="result" (openDetails)="openDetails(result)"
+            (playEvent)="playEvent($event)"></app-audio-result-card>
+        </div>
+
+        <ng-container *ngSwitchCase="searchTypes.document">
+          <app-document-result-card *ngFor="let result of results" [itemInfo]="result"
+            (openDetails)="openDetails(result)"></app-document-result-card>
+        </ng-container>
+
+
+        <!-- <ng-container *ngSwitchCase="searchTypes.all"> -->
+        <ng-container *ngSwitchDefault>
+          <app-general-result-card *ngFor="let result of results" [itemInfo]="result"
+            (openDetails)="openDetails(result)" (playEvent)="playEvent($event)"></app-general-result-card>
+        </ng-container>
+
+      </ng-container>
+
+
+      <ion-infinite-scroll *ngIf="results && results.length" threshold="50px" (ionInfinite)="bottomReached()">
         <ion-infinite-scroll-content loadingSpinner="dots"></ion-infinite-scroll-content>
       </ion-infinite-scroll>
     </div>

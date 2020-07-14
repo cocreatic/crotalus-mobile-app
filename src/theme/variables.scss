@@ -10,6 +10,14 @@
   --search-input-background: #ffffff;
   --header-search-input-background: #f6f6f6;
   --details-title-color: #383a3e;
+
+  --all-type-color: #616161;
+  --image-type-color: #674dc7;
+  --video-type-color: #3e7fc6;
+  --audio-type-color: #cc3333;
+  --document-type-color: #2db075;
+  --didactic-unit-type-color: #fa9e45;
+
   
   
 
@@ -84,6 +92,7 @@
   --ion-color-light-contrast-rgb: 0, 0, 0;
   --ion-color-light-shade: #d7d8da;
   --ion-color-light-tint: #f5f6f9;
+  --ion-color-light-tint-rgb: 245, 246, 249;
 }
 
 /*
@@ -99,6 +108,8 @@ body.dark {
   --search-input-background: #1A1B1E;
   --header-search-input-background: #1A1B1E;
   --details-title-color: #dbdbdb;
+
+  // --all-type-color: #ffcb30;
 
   
   --ion-color-primary: #673ab7;
@@ -163,6 +174,7 @@ body.dark {
   --ion-color-light-contrast-rgb: 255,255,255;
   --ion-color-light-shade: #1e2023;
   --ion-color-light-tint: #383a3e;
+  --ion-color-light-tint-rgb: 56, 58, 62;
 }
 
 /*
@@ -257,6 +269,6 @@ body.dark {
   --ion-item-background: #1A1B1E;
 }
 
-ion-title.title-large {
-  --color: white;
-}
+// ion-title.title-large {
+//   --color: white;
+// }

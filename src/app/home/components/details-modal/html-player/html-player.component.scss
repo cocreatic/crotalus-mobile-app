@@ -1,0 +1,31 @@
+$wrapper-size: 200px;
+
+.wrapper {
+  width: $wrapper-size;
+  height: $wrapper-size;
+  border-radius: $wrapper-size;
+  display: flex;
+  flex-direction: column ;
+  justify-content: center;
+  align-items: center;
+  margin: 20px auto 0;
+  background-color: rgba(var(--ion-color-light-tint-rgb), 0.7);
+
+  ion-button {
+    --border-radius: #{$wrapper-size};
+    --padding-top: 18px;
+    --padding-bottom: 18px;
+    --padding-start: 14px;
+    --padding-end: 14px;
+    margin: 10px auto;
+    --background: var(--document-type-color);
+    height: 64px;
+    width: 64px;
+  }
+
+  ion-label {
+    color: var(--document-type-color);
+    font-size: 1.1em;
+
+  }
+}

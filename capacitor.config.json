@@ -1,5 +1,5 @@
 {
-  "appId": "io.ionic.starter",
+  "appId": "boa.project.crotalus",
   "appName": "Crotalus",
   "bundledWebRuntime": false,
   "npmClient": "npm",
@@ -16,6 +16,8 @@
     "StatusBarOverlaysWebView": "false",
     "ScrollEnabled": "false",
     "android-minSdkVersion": "23",
-    "BackupWebStorage": "none"
+    "BackupWebStorage": "none",
+    "AndroidPersistentFileLocation": "Internal",
+    "iosPersistentFileLocation": "Library"
   }
 }

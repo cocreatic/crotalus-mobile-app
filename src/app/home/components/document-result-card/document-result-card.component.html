@@ -1,0 +1,25 @@
+<ion-card *ngIf="itemInfo" class="item-card" (click)="openDetails.emit()">
+  <div class="content-wrapper">
+    <div class="top-info-bar">
+      <ion-chip>
+        <ion-label>{{itemInfo.metadata.technical.format.split('/')[1]}}</ion-label>
+      </ion-chip>
+      <span class="repository-name">{{itemInfo.repositoryName}}</span>
+    </div>
+    <ion-card-header>
+      <ion-card-title>{{itemInfo.metadata.general.title.none}}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p class="description">{{itemInfo.metadata.general.description.none}}</p>
+      <p class="keywords">
+        <em
+          *ngIf="itemInfo.metadata.general.keywords && !!itemInfo.metadata.general.keywords.none.join(); else noKeywords"><strong>Palabras
+            clave:
+          </strong>{{itemInfo.metadata.general.keywords.none.join(', ')}}</em>
+        <ng-template #noKeywords>
+          <em>Sin palabras clave definidas</em>
+        </ng-template>
+      </p>
+    </ion-card-content>
+  </div>
+</ion-card>

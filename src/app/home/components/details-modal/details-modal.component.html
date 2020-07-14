@@ -1,6 +1,9 @@
 <ion-content>
-
-  <ion-header class="title">
+  <ion-header class="title" [ngClass]="{'image-type': itemType=== searchTypes.image,
+  'video-type': itemType=== searchTypes.video,
+  'audio-type': itemType=== searchTypes.audio,
+  'document-type': itemType=== searchTypes.document,
+  'didactic-unit-type': itemType=== searchTypes.didacticUnit }">
     <ion-toolbar>
       <ion-icon class="icon" [name]="titleIcon" slot="start"></ion-icon>
       <div class="title">
@@ -9,18 +12,36 @@
         </h4>
       </div>
       <ion-buttons slot="end">
-        <ion-button color="primary" size="large" (click)="closeModal()">
-          <ion-icon name="close" color="primary"></ion-icon>
+        <ion-button size="large" (click)="closeModal()">
+          <ion-icon name="close"></ion-icon>
         </ion-button>
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
 
-  <div class="content">
   
-    <div class="image-wrapper" *ngIf="manifest">
-      <img [src]="manifest.customicon" alt="miniatura del OVA">
-    </div>
+  <div class="content" *ngIf="itemData;else loadingIndicator">
+    
+    
+    <ng-container [ngSwitch]="true">
+      
+      <app-image-player *ngSwitchCase="itemType === searchTypes.image" [imageItem]="itemData"></app-image-player>
+      
+      <app-video-player *ngSwitchCase="itemType === searchTypes.video" [videoItem]="itemData"></app-video-player>
+      
+      <app-audio-player *ngSwitchCase="itemType === searchTypes.audio" [audioSrc]="audioSrc"></app-audio-player>
+      
+      <app-html-player *ngSwitchCase="itemType === searchTypes.document && showDocumentPlayer" 
+      [url]="originalFileUrl" [format]="format" (openPdf)="openPdf()" ></app-html-player>
+      
+      <ng-container *ngSwitchDefault>
+        <div class="image-wrapper" *ngIf="manifest">
+          <img [src]="manifest.customicon" alt="miniatura del OVA">
+        </div>
+      </ng-container>
+      
+    </ng-container>
+
     <div class="info-wrapper">
       <div class="info-item" *ngIf="description">
         <h4>Descripción:</h4>
@@ -80,5 +101,22 @@
       </div>
 
     </div>
+
+    <div class="actions">
+      <ion-button (click)="presentActionSheet()" expand="block" color="light" [class.disabled]="this.format === 'text/html' ">
+        <ion-icon slot="start" name="cloud-download"></ion-icon>
+        Descargar
+      </ion-button>
+
+      <ion-button (click)="share()" expand="block" color="light">
+        <ion-icon slot="start" name="share-social"></ion-icon>
+        Compartir
+      </ion-button>
+    </div>
   </div>
+
+  <ng-template #loadingIndicator>
+    <ion-spinner class="loading-indicator" name="dots"></ion-spinner>
+  </ng-template>
+
 </ion-content>

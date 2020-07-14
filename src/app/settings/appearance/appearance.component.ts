@@ -1,7 +1,7 @@
 import { Platform } from '@ionic/angular';
 import { StorageKeys } from './../../models/storageKeys.enum';
 import { Component, OnInit } from '@angular/core';
-import { Storage } from "@ionic/storage";
+import { Storage } from '@ionic/storage';
 import * as storageModels from './../../models/storageDataModels.interface';
 
 @Component({

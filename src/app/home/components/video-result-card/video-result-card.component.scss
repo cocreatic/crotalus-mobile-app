@@ -1,0 +1,58 @@
+:host {
+  --thumbnail-size: 320px;
+}
+
+ion-card {
+  display: inline-block;
+  margin: 0 30px 30px;
+  width: var(--thumbnail-size);
+}
+
+ion-card-header {
+  padding: 18px 6px 6px;
+
+  span.repository-name {
+    color: var(--ion-color-medium-tint);
+    font-size: 16px;
+    font-weight: 300; 
+  }
+  
+  ion-card-title {
+    font-size: 18px;
+    font-family: "Cabin Sketch", cursive;
+    font-weight: bold;
+    letter-spacing: 0.01em;
+    margin-top: 2px;
+  }
+}
+
+.thumbnail-wrapper {
+  position: relative;
+  width: 100%;
+  height: var(--thumbnail-size);
+
+  app-image-loader,
+  .preview-box {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+  
+  .preview-box {
+    z-index: -1;
+    background-size: cover;
+
+     &.active {
+       z-index: 2;
+     }
+  }
+
+  ::ng-deep app-image-loader {
+    img {
+      width: 100%;
+      max-height: var(--thumbnail-size);
+    }
+  }
+}
