@@ -1,12 +1,12 @@
 <ion-content>
-  <ion-header class="title" [ngClass]="{'image-type': itemType=== searchTypes.image,
+  <ion-header #detailsHeader class="title" [ngClass]="{'image-type': itemType=== searchTypes.image,
   'video-type': itemType=== searchTypes.video,
   'audio-type': itemType=== searchTypes.audio,
   'document-type': itemType=== searchTypes.document,
   'didactic-unit-type': itemType=== searchTypes.didacticUnit }">
     <ion-toolbar>
       <ion-icon class="icon" [name]="titleIcon" slot="start"></ion-icon>
-      <div class="title">
+      <div>
         <h4>
           <span>{{ title }}</span>
         </h4>
@@ -58,10 +58,6 @@
           <br />
           <span>{{ contribution.date.split('T')[0] }}</span>
           <br />
-          <!-- <span class="company" [matTooltip]="contribution.entity.company"
-            [matTooltipDisabled]="!cropContributionCompanyLabel(contribution.entity.company)"></span>
-            {{ contribution.entity.company.length < 31 ? contribution.entity.company : contribution.entity.company.slice(0,30) }}
-            <span *ngIf="cropContributionCompanyLabel(contribution.entity.company)">...</span> -->
           <span class="company">
             {{ contribution.entity.company.length < 31 ? contribution.entity.company : contribution.entity.company.slice(0,30) }}
           </span>
@@ -94,9 +90,6 @@
             <br />
             {{ copyrightVersion }}
           </span>
-          <!-- <ion-icon name="open-outline"></ion-icon> -->
-          <!-- <a class="license-link" [href]="copyrightUrl" target="_blank"> -->
-          <!-- </a> -->
         </p>
       </div>
 

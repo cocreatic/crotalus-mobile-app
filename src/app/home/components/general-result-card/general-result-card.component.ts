@@ -11,6 +11,7 @@ import * as Helpers from '../../../helpers';
 export class GeneralResultCardComponent {
 
   @Input() itemInfo: BoaResource;
+  @Input() didacticUnitResult: boolean;
   @Output() openDetails = new EventEmitter();
   @Output() playEvent = new EventEmitter<HTMLAudioElement>();
 

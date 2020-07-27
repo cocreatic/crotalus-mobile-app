@@ -1,7 +1,7 @@
+import { switchMap } from 'rxjs/operators';
 import { License } from './../models/license.interface';
-import { LICENSES } from './../models/licenses.const';
 import { SearchTypes } from './../models/search-type.enum';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { DetailsModalComponent } from './components/details-modal/details-modal.component';
 import { BoaResource } from './../models/boa-resource.interface';
 import { Component, ChangeDetectorRef, ViewChild, ElementRef, AfterViewChecked, OnInit } from '@angular/core';
@@ -21,8 +21,7 @@ const { Keyboard, App } = Plugins;
 })
 export class HomePage implements OnInit, AfterViewChecked {
 
-  // valueToSearch: string;
-  valueToSearch: string = '*a*';
+  valueToSearch: string;
   lastValueSearched: string;
   results: any[];
   resultsSize: number;
@@ -47,11 +46,14 @@ export class HomePage implements OnInit, AfterViewChecked {
   licenses: License[];
   activeLicensesCount: number;
   disableLastActiveLicense: boolean;
-
-
+  searchRequest$ = new Subject<boolean>();
+  detailsPageActive = false;
+  searchResponse$: Observable<BoaResource[][]>;
+  // searchResponse$: any;
+    
+  showNoResultsMessage = false;
   backButtonCounter = 0;
   backButtonEventlistener: PluginListenerHandle;
-
 
   @ViewChild(IonInfiniteScroll, { static: false }) infiniteScroll: IonInfiniteScroll;
   @ViewChild('searchBarWrapper', { static: false }) searchBox: ElementRef<HTMLElement>;
@@ -96,8 +98,9 @@ export class HomePage implements OnInit, AfterViewChecked {
     })
 
     this.searchType = await this.getDefaultSearchType();
+    this.setupSearchStream();
   }
-  
+
 
   async getDefaultSearchType(): Promise<SearchTypes> {
     const val = await this.storage.get(StorageKeys.defaultSearchType);
@@ -113,7 +116,7 @@ export class HomePage implements OnInit, AfterViewChecked {
     }
   }
 
-  async openLicensesMenu(): Promise<void> {
+  async toggleLicensesMenu(): Promise<void> {
     if (this.menuIsOpened) {
       this.menuController.close('licencesMenu');
     } else {
@@ -139,54 +142,62 @@ export class HomePage implements OnInit, AfterViewChecked {
 
   initSearch(): void {
     this.results = [];
+    this.showNoResultsMessage = false;
     this.noMoreResults = false;
   }
 
-  search(firstCall: boolean): void {
+  setupSearchStream(): void {
+    this.searchResponse$ = this.searchRequest$.pipe(
+      switchMap((firstCall: boolean) => this.searchService.search(this.valueToSearch, firstCall, this.searchType))
+    );
 
+    this.searchResponse$.subscribe((results: BoaResource[][]) => {
+      this.searchDone = true;
+      this.isSearching = false;
+      if (this.infiniteScroll) {
+        this.infiniteScroll.complete();
+      }
+      // debugger;
+      const lastResults = results.flat().filter((resource: BoaResource) => resource.type);
+      if (lastResults.length > 0 && results.flat().length < this.resultsSize) {
+        this.results.push(...lastResults);
+        this.showNoMoreResults();
+      } else if (lastResults.length === 0) {
+        this.showNoMoreResults();
+      } else {
+        this.results = [...this.results, ...lastResults];
+        // if (this.searchType === SearchTypes.image) {
+        // } else {
+        //   this.results.push(...lastResults);
+        // }
+      }
+    });
+  }
+
+  search(firstCall: boolean): void {
     if (!this.valueToSearch || this.valueToSearch.length < this.minLetters) {
       this.showMinimumLettersRequired();
       return;
     }
-
     if (this.lastValueSearched !== this.valueToSearch) {
       this.lastValueSearched = this.valueToSearch;
     }
-
     if (firstCall) {
       this.initSearch();
       this.pristine = false;
       Keyboard.hide();
     }
     this.isSearching = true;
-    this.searchService.search(this.valueToSearch, firstCall, this.searchType).then((searchRequest: Observable<any>) => {
-      searchRequest.subscribe((results: BoaResource[]) => {
-        this.searchDone = true;
-        this.isSearching = false;
-        if (this.infiniteScroll) {
-          this.infiniteScroll.complete();
-        }
-        const lastResults = results.flat().filter((resource: BoaResource) => resource.type);
-        if (lastResults.length > 0 && lastResults.length < this.resultsSize) {
-          this.results.push(...lastResults);
-          this.showNoMoreResults();
-        } else if (lastResults.length === 0) {
-          this.showNoMoreResults();
-        } else {
-          if (this.searchType === SearchTypes.image) {
-            // debugger;
-            this.results = [...this.results, ...lastResults];
-          } else {
-            this.results.push(...lastResults);
-          }
-          // this.changeDetector.detectChanges();
-        }
-      });
-    });
+    this.searchRequest$.next(firstCall);
   }
 
   showNoMoreResults(): void {
+    if (this.noMoreResults) {
+      return;
+    }
+    this.showNoResultsMessage = !this.results.length;
     this.noMoreResults = true;
+
     if (this.infiniteScroll) {
       this.infiniteScroll.disabled = true;
     }
@@ -233,6 +244,10 @@ export class HomePage implements OnInit, AfterViewChecked {
   }
 
   async openDetails(item: BoaResource): Promise<void> {
+    if (this.detailsPageActive) {
+      return;
+    }
+    this.detailsPageActive = true;
     this.shouldClearAudioPlaying();
     const modal = await this.modalController.create({
       component: DetailsModalComponent,
@@ -245,6 +260,7 @@ export class HomePage implements OnInit, AfterViewChecked {
     this.backButtonEventlistener.remove();
     modal.onDidDismiss().then(() => {
       this.setBackButtonListener();
+      this.detailsPageActive = false;
     });
   }
 
@@ -261,23 +277,6 @@ export class HomePage implements OnInit, AfterViewChecked {
         this.backButtonCounter = 0;
       }, 3000);
     });
-  }
-
-  async ionViewWillEnter() {
-
-    if (this.componentInitializing) {
-      this.componentInitializing = false;
-      return;
-    }
-
-    // TODO: remove, just for demonstration
-
-    this.initSearch();
-
-    const defaultSearchType = await this.getDefaultSearchType();
-    if (this.searchType && this.searchType !== defaultSearchType) {
-      this.searchType = defaultSearchType;
-    }
   }
 
   playEvent(event: HTMLAudioElement): void {
@@ -303,22 +302,12 @@ export class HomePage implements OnInit, AfterViewChecked {
     this.audioCurrentlyPlaying = null;
   }
 
-  ionViewWillLeave(): void {
-    this.dismissCurrentToast();
-  }
-
-  ionViewDidEnter(): void {
-    this.setBackButtonListener();
-  }
-
-  ionViewDidLeave(): void {
-    this.backButtonEventlistener.remove();
-  }
-
   setSearchType(type: SearchTypes): void {
     this.searchType = type;
-
-    if (this.results && this.results.length) {
+    if (!this.pristine) {
+      if (!this.valueToSearch || this.valueToSearch.length < this.minLetters) {
+        this.valueToSearch = this.lastValueSearched;
+      }
       this.search(true);
     }
   }
@@ -328,6 +317,38 @@ export class HomePage implements OnInit, AfterViewChecked {
   }
 
   get showActiveLicensesCount(): boolean {
-    return this.activeLicensesCount &&  this.activeLicensesCount < this.licenses.length;
+    return this.activeLicensesCount && this.activeLicensesCount < this.licenses.length;
+  }
+
+  async ionViewWillEnter() {
+    if (this.componentInitializing) {
+      this.componentInitializing = false;
+      return;
+    }
+
+    if (this.searchService.getDefaultSearchChangedInSettings()) {
+      const defaultSearchType = await this.getDefaultSearchType();
+      if (this.searchType && this.searchType !== defaultSearchType) {
+        this.initSearch();
+        this.pristine = true;
+        this.searchType = defaultSearchType;
+      }
+      this.searchService.setDefaultSearchChangedInSettings(false);
+    }
+  }
+
+  ionViewWillLeave(): void {
+    this.dismissCurrentToast();
+  }
+  
+  ionViewDidEnter(): void {
+    this.setBackButtonListener();
+  }
+  
+  ionViewDidLeave(): void {
+    if (this.menuIsOpened) {
+      this.toggleLicensesMenu();
+    }
+    this.backButtonEventlistener.remove();
   }
 }

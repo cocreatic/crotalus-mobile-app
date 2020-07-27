@@ -6,6 +6,10 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { StorageKeys } from '../../models/storageKeys.enum';
 import { ToastController } from '@ionic/angular';
 
+interface RepositoryToShow extends BoaRepository {
+  connected: boolean
+}
+
 @Component({
   selector: 'app-repositories',
   templateUrl: './repositories.component.html',
@@ -13,10 +17,10 @@ import { ToastController } from '@ionic/angular';
 })
 export class RepositoriesComponent implements OnInit, OnDestroy {
 
-  availableRepositories: any;
   fetchingAvailableRepositories: boolean;
+  availableRepositories: BoaRepository[];
   connectedRepositories: BoaRepository[];
-  nonConnectedRepositories: BoaRepository[];
+  repositoriesToShow: RepositoryToShow[];
   currentToast: null | HTMLIonToastElement = null;
 
   registeredRepositoriesUrl = 'http://b.boaproject.net/index.json';
@@ -52,7 +56,7 @@ export class RepositoriesComponent implements OnInit, OnDestroy {
       console.log('Fetching available repos');
     }
   }
-
+  
   async getConnectedRepositories(): Promise<void> {
     const value = await this.storage.get(StorageKeys.connectedRepositories);
     if (value) {
@@ -68,15 +72,13 @@ export class RepositoriesComponent implements OnInit, OnDestroy {
   }
 
   updateRepositoriesToShow(): void {
-    if (this.connectedRepositories.length) {
-      this.nonConnectedRepositories = this.availableRepositories.filter(
-        (repository: BoaRepository) => !this.connectedRepositories.some((item: BoaRepository) => item.api === repository.api)
-      );
-    } else {
+    this.repositoriesToShow = this.availableRepositories.map(repository => (
+      { ...repository, connected: this.connectedRepositories.some(connectedRepo => connectedRepo.name === repository.name) }
+    ));
+    if (!this.connectedRepositories.length) {
       setTimeout(() => {
         this.presentToast('No hay repositorios conectados para la búsqueda', 3000);
       }, 500);
-      this.nonConnectedRepositories = [...this.availableRepositories];
     }
     if (this.initializing) {
       this.initializing = false;
@@ -103,11 +105,17 @@ export class RepositoriesComponent implements OnInit, OnDestroy {
     return repository.catalogs.map(catalog => catalog.title).join(', ');
   }
 
-  async toggleRepository(repository: BoaRepository, index?: number): Promise<void> {
-    if (index !== undefined) {
-      this.connectedRepositories.splice(index, 1);
+  async toggleRepository(event: CustomEvent, repository: RepositoryToShow): Promise<void> {
+    if (event.detail.checked === undefined) {
+      return;
+    }
+    if (repository.connected) {
+      const repositoryIndex = this.connectedRepositories.findIndex(connectedRepo => repository.name === connectedRepo.name);
+      this.connectedRepositories.splice(repositoryIndex, 1);
     } else {
-      this.connectedRepositories = this.sortReposByNameAscending([...this.connectedRepositories, repository]);
+      const newConnectedRepo = repository;
+      delete newConnectedRepo.connected;
+      this.connectedRepositories.push(newConnectedRepo);
     }
     await this.storage.set(StorageKeys.connectedRepositories, this.connectedRepositories);
     this.searchService.updateReposConnectedNumber();

@@ -47,9 +47,8 @@ export class VideoResultCardComponent implements OnChanges, AfterViewInit {
   }
 
   imageLoadError(): void {
-    // TODO: show meesage when thumbnail no loaded
-    // this.thumbnailSrc = this.originalFileUrl;
-    console.log('thumnail couldn\'t be loaded');
+    // TODO: show message when thumbnail no loaded
+    console.warn('thumnail couldn\'t be loaded');
   }
 
   getThumbnailUrl(): string {

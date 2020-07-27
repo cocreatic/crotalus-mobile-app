@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer/ngx';
 import { File } from '@ionic-native/file/ngx';
 import { Platform, LoadingController } from '@ionic/angular';
+import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
 import * as Helpers from "./../helpers";
 
 interface DownloadResource {
@@ -22,12 +23,32 @@ export class DownloadService {
     private transfer: FileTransfer,
     private file: File,
     private platform: Platform,
+    private androidPermissions: AndroidPermissions,
     public loadingController: LoadingController,
   ) {
     this.fileTransfer = this.transfer.create();
   }
 
-  async download(resource: DownloadResource, title: string, fileExt: string, type: string) {
+  async validateAndroidPermissions(): Promise<boolean> {
+    try {
+      const result = await this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.WRITE_EXTERNAL_STORAGE);
+      if (result.hasPermission) {
+        return true;
+      }
+    } catch (error) {
+      console.warn(error);
+    }
+    const permissionGranted = await this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.WRITE_EXTERNAL_STORAGE);
+    return permissionGranted.hasPermission;
+  }
+
+  async download(resource: DownloadResource, title: string, fileExt: string, type: string): Promise<any> {
+    if (this.platform.is('android')) {
+      const hasPermission = await this.validateAndroidPermissions();
+      if (!hasPermission) {
+        return this.returnDownloadError('error in write permission validation');
+      }
+    }
     this.showDownloadingAlert();
     const url = resource.url;
     const fileNameString = title.toLowerCase().substr(0, this.SUBSTRING_NAME_LENGHT);
@@ -36,30 +57,27 @@ export class DownloadService {
     let deviceDirectoryPath = this.selectDeviceStoragePath();
     const mainFolderIsValid = await this.validateFolder(deviceDirectoryPath, 'Crotalus');
     if (!mainFolderIsValid) {
-      // TODO: throw error an return
-      console.log('throw error and return in crotalus folder validation');
-      this.downloadingAlert.dismiss();
+      return this.returnDownloadError('error in Crotalus main folder validation');
     }
     deviceDirectoryPath = `${deviceDirectoryPath}Crotalus/`;
     const targetType = resource.alternateName === 'Vista previa' || resource.alternateName === 'Miniatura' ? 'image' : type;
     const fileTypeFolder = `Crotalus ${Helpers.getItemTypeLabel(targetType, true)}`;
     const fileTypeFolderIsValid = await this.validateFolder(deviceDirectoryPath, fileTypeFolder);
     if (!fileTypeFolderIsValid) {
-      // TODO: throw error an return
-      console.log('throw error an return in filetype folder validation');
-      this.downloadingAlert.dismiss();
+      return this.returnDownloadError('error in filetype folder validation');
     }
-
     deviceDirectoryPath = `${deviceDirectoryPath}${fileTypeFolder}/`;
-    console.log('descargar de: ', url);
-    const result =  await this.fileTransfer.download(url, deviceDirectoryPath + fileName);
-    this.downloadingAlert.dismiss();
-    return result;
+    try {
+      const result = await this.fileTransfer.download(url, deviceDirectoryPath + fileName);
+      this.downloadingAlert.dismiss();
+      return result;
+    } catch (error) {
+      this.returnDownloadError('error downloading file: ', error);
+    }
   }
 
   async validateFolder(directoryPath: string, folder: string): Promise<boolean> {
     let folderExists = true;
-    console.log(directoryPath, ' ', folder);
     try {
       await this.file.checkDir(directoryPath, folder);
     } catch (error) {
@@ -82,6 +100,18 @@ export class DownloadService {
       duration: 0
     });
     await this.downloadingAlert.present();
+  }
+
+  returnDownloadError(message: string, error?: any): string {
+    if (error) {
+      console.warn(message, error);
+    } else {
+      console.warn(message);
+    }
+    if (this.downloadingAlert) {
+      this.downloadingAlert.dismiss();
+    }
+    return 'error';
   }
 
 }

@@ -5,13 +5,13 @@
         <ion-label class="title">Modo oscuro</ion-label>
         <ion-item>
           <ion-label>Usar configuración del sistema</ion-label>
-          <ion-checkbox class="system-default" color="primary" [checked]="useSystemThemeMode"
+          <ion-checkbox class="system-default" color="crotalus-controls" [checked]="useSystemThemeMode"
             (ionChange)="darkThemeChange($event)"></ion-checkbox>
         </ion-item>
         <ion-item>
           <ion-label>Usar modo oscuro</ion-label>
           <ion-toggle [checked]="darkThemeEnabled" [disabled]="useSystemThemeMode" (ionChange)="darkThemeChange($event)"
-            color="success" slot="end"></ion-toggle>
+            color="crotalus-controls" slot="end"></ion-toggle>
         </ion-item>
       </div>
     </ion-item>
@@ -21,40 +21,40 @@
       <div class="content-wrapper">
         <ion-label class="title">Búsqueda por defecto</ion-label>
         <ion-list class="item-type-list">
-          <ion-radio-group [(ngModel)]="defaultSearchType" (ionChange)="updateDefaultTypeForSearch($event)">
-            <ion-item>
+          <ion-radio-group [value]="defaultSearchType" (ionChange)="updateDefaultTypeForSearch($event)">
+            <ion-item class="all-type">
               <ion-label>Todo</ion-label>
-              <ion-radio color="primary" slot="start" value="all"></ion-radio>
+              <ion-radio slot="start" value="all"></ion-radio>
             </ion-item>
 
-            <ion-item>
+            <ion-item class="image-type">
               <ion-label>Imágenes <ion-icon name="image"></ion-icon>
               </ion-label>
-              <ion-radio color="warning" slot="start" value="image"></ion-radio>
+              <ion-radio slot="start" value="image"></ion-radio>
             </ion-item>
 
-            <ion-item>
+            <ion-item class="video-type">
               <ion-label>Videos <ion-icon name="videocam"></ion-icon>
               </ion-label>
-              <ion-radio color="secondary" slot="start" value="video"></ion-radio>
+              <ion-radio slot="start" value="video"></ion-radio>
             </ion-item>
 
-            <ion-item>
+            <ion-item class="audio-type">
               <ion-label>Audios <ion-icon name="volume-medium"></ion-icon>
               </ion-label>
-              <ion-radio color="success" slot="start" value="audio"></ion-radio>
+              <ion-radio slot="start" value="audio"></ion-radio>
             </ion-item>
 
-            <ion-item>
+            <ion-item class="document-type">
               <ion-label>Documentos <ion-icon name="document"></ion-icon>
               </ion-label>
-              <ion-radio color="danger" slot="start" value="document"></ion-radio>
+              <ion-radio slot="start" value="document"></ion-radio>
             </ion-item>
 
-            <ion-item>
+            <ion-item class="didactic-unit-type">
               <ion-label>Unidades didácticas <ion-icon name="people"></ion-icon>
               </ion-label>
-              <ion-radio color="tertiary" slot="start" value="didacticUnit"></ion-radio>
+              <ion-radio slot="start" value="didacticUnit"></ion-radio>
             </ion-item>
           </ion-radio-group>
         </ion-list>

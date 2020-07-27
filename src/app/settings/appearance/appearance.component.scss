@@ -1,3 +1,6 @@
+@import "mixins";
+@import "sass-variables";
+
 ion-content {
   --background: var(--custom-background);
 }
@@ -16,7 +19,7 @@ ion-item {
   --inner-border-width: 0;
 }
 
-.content-wrapper{
+.content-wrapper {
   width: 100%;
   max-width: 400px;
 
@@ -31,19 +34,35 @@ ion-item {
 
     ion-item {
       --min-height: 40px;
+
+      @each $class,
+      $color in $content-type-colors {
+        &.#{$class} {
+
+          ion-icon {
+            color: $color;
+            margin-left: 10px;
+          }
+          
+          ion-radio{
+            margin-right: 10px;
+            --color-checked: #{$color};
+          }
+        }
+      }
     }
 
     ion-label {
       display: flex;
       justify-content: flex-start;
       align-items: center;
-  
+
       ion-icon {
         font-size: 22px;
         margin: 1px 0 0 7px;
       }
     }
-    }
+  }
 }
 
 .reset-settings {
@@ -52,3 +71,5 @@ ion-item {
   --padding-bottom: 25px;
   --box-shadow: none;
 }
+
+

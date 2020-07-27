@@ -31,7 +31,8 @@ export class SettingsPage {
   }
 
   ionViewWillEnter() {
-    this.tabsCurrentValue = 'appearance';
+    const targetRoute = this.router.url.split('/').pop();
+    this.tabsCurrentValue = targetRoute === 'repositories' ? 'repositories' : 'appearance';
   }
 
   ionViewDidEnter(): void {

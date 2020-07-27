@@ -23,6 +23,8 @@ import { SimpleAudioPlayerComponent } from './components/simple-audio-player/sim
 import { AudioPlayerComponent } from './components/details-modal/audio-player/audio-player.component';
 import { HtmlPlayerComponent } from './components/details-modal/html-player/html-player.component';
 import { DocumentResultCardComponent } from './components/document-result-card/document-result-card.component';
+import { SearchTypeSelectorComponent } from './components/search-type-selector/search-type-selector.component';
+import { SearchTypeClassDirective } from '../directives/search-type-class.directive';
 
 
 @NgModule({
@@ -53,7 +55,9 @@ import { DocumentResultCardComponent } from './components/document-result-card/d
     SimpleAudioPlayerComponent,
     AudioPlayerComponent,
     HtmlPlayerComponent,
-    DocumentResultCardComponent
+    DocumentResultCardComponent,
+    SearchTypeSelectorComponent,
+    SearchTypeClassDirective
   ],
   providers: [FileOpener],
   entryComponents: [

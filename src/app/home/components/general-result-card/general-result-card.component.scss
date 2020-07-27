@@ -18,9 +18,16 @@ ion-card {
   }
 
   ion-chip {
+    color: var(--ion-color-crotalus);
+    border-color: var(--ion-color-crotalus);
+
+    ion-icon {
+      color: var(--ion-color-crotalus);
+    }
+
+
     @each $class, $color in $content-type-colors {
       &.#{$class} {
-        --color: #{$color};
         color: $color;
         border-color: $color;
 

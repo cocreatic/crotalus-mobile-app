@@ -1,0 +1,50 @@
+@import "mixins";
+@import "sass-variables";
+
+.type-selection-wrapper {
+  display: flex;
+  justify-content: center;
+  color: var(--ion-color-medium-shade);
+  margin-bottom: 25px;
+  margin-top: 5px;
+  transition: transform $animation-duration ease-in-out;
+  border-bottom: 2px solid;
+
+  @each $class,
+  $color in $content-type-colors {
+    &.#{$class} {
+      border-bottom-color: $color;
+    }
+  }
+
+  &.pristine {
+    transform: translateY(-105px);
+  }
+
+  ion-button {
+    flex: 1 0 auto;
+    --border-radius: 4px 4px 0 0;
+    margin-left: 0;
+    margin-right: 0;
+
+    &.active {
+      pointer-events: none;
+
+      @each $class,
+      $color in $content-type-colors {
+        &.#{$class} {
+          @include icon-label-color($color);
+        }
+      }
+    }
+
+    ion-label {
+      color: #c8c9cc;
+      text-transform: none;
+    }
+  }
+
+  ion-icon {
+    color: #c8c9cc;
+  }
+}

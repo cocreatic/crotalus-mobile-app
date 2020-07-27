@@ -4,8 +4,8 @@
       <ion-chip outline [ngClass]="{'image-type': itemInfo.type === searchTypes.image,
       'video-type': itemInfo.type === searchTypes.video,
       'audio-type': itemInfo.type === searchTypes.audio,
-      'document-type': itemInfo.type === searchTypes.document,
-      'didactic-unit-type': itemInfo.type === searchTypes.didacticUnit }">
+      'document-type': itemInfo.type === searchTypes.document }"
+      [class.didactic-unit-type]="didacticUnitResult">
         <ion-icon [name]="getItemTypeIcon(itemInfo.type)"></ion-icon>
         <ion-label>{{itemInfo.metadata.technical.format.split('/')[1]}}</ion-label>
       </ion-chip>

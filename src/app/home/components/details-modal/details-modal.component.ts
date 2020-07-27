@@ -1,7 +1,7 @@
 import { DownloadService } from './../../../services/download.service';
 import { SearchService } from './../../../services/search.service';
 import { BoaResource, BoaResourceManifest, Contribution, BoaResourceSocial } from './../../../models/boa-resource.interface';
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, AfterViewChecked, ElementRef } from '@angular/core';
 import { ModalController, ToastController } from '@ionic/angular';
 import * as Helpers from "../../../helpers";
 import { SearchTypes } from 'src/app/models/search-type.enum';
@@ -16,9 +16,11 @@ import { FileEntry } from '@ionic-native/file/ngx';
   templateUrl: './details-modal.component.html',
   styleUrls: ['./details-modal.component.scss'],
 })
-export class DetailsModalComponent implements OnInit {
+export class DetailsModalComponent implements OnInit, AfterViewChecked {
 
   @Input() itemAboutString: string;
+
+  @ViewChild('detailsHeader', { static: false }) headerElm: any;
 
   searchTypes = SearchTypes;
   itemData: BoaResource;
@@ -45,6 +47,8 @@ export class DetailsModalComponent implements OnInit {
   downloadItems: any[];
   readonly MAX_COMPANY_LABEL_LENGTH = 30;
   currentToast: null | HTMLIonToastElement = null;
+  headerHeight: number;
+  
 
 
   constructor(
@@ -55,6 +59,7 @@ export class DetailsModalComponent implements OnInit {
     private downloadService: DownloadService,
     private fileOpener: FileOpener,
     public toastController: ToastController,
+    private hostElement: ElementRef,
   ) {
 
   }
@@ -64,6 +69,15 @@ export class DetailsModalComponent implements OnInit {
       this.itemData = response;
       this.assignLocalVariables();
     });
+  }
+
+  ngAfterViewChecked(): void {
+    if (!this.headerHeight) {
+      this.headerHeight = this.headerElm.el.offsetHeight;
+      if (this.headerHeight && this.headerHeight !== 56) {
+        this.hostElement.nativeElement.style.setProperty('--top-content-offset', `${this.headerHeight}px`);
+      }
+    }
   }
 
   assignLocalVariables() {
@@ -123,7 +137,7 @@ export class DetailsModalComponent implements OnInit {
     console.log("Sharing failed with message: " + msg);
   };
 
-  async download(resource: any): Promise<FileEntry> {
+  async download(resource: any): Promise<FileEntry | string> {
     const fileNameInUrl: string = resource.url.slice(resource.url.lastIndexOf('/') + 1);
     let fileName = this.manifest.title ? this.manifest.title.slice(0, this.manifest.title.lastIndexOf('.')) : this.title;
     let fileNameExt: string;
@@ -135,15 +149,18 @@ export class DetailsModalComponent implements OnInit {
     return this.downloadService.download(resource, fileName, fileNameExt, this.itemType);
   }
 
-  async openPdf() {
+  async openPdf(): Promise<void> {
     const resource = {
       name: '',
       url: this.getResourceDownloadUrl('original'),
     }
     const downloadedFile = await this.download(resource);
-    console.log(downloadedFile);
-    this.fileOpener.open(downloadedFile.toURL(), 'application/pdf')
-      .then(result => {console.log(result);})
+    if (downloadedFile === 'error') {
+      this.presentToast('Error en la descarga. Inténtalo de nuevo', 2000);
+      return;
+    }
+    this.fileOpener.open((downloadedFile as FileEntry).toURL(), 'application/pdf')
+      .then(result => { console.log(' file opened OK') })
       .catch(error => { console.error(error) });
   }
 
@@ -158,7 +175,12 @@ export class DetailsModalComponent implements OnInit {
         text: this.getSizeLabel(alternate),
         url: this.getResourceDownloadUrl(alternate),
         icon: 'chevron-forward',
-        handler: () => this.download({ alternateName: this.getSizeLabel(alternate), url: this.getResourceDownloadUrl(alternate) })
+        handler: async() => {
+          const downloadResult = await this.download({ alternateName: this.getSizeLabel(alternate), url: this.getResourceDownloadUrl(alternate) });
+          if (downloadResult === 'error') {
+            this.presentToast('Error en la descarga. Inténtalo de nuevo', 2000);
+          }
+        }
       }));
     }
 
@@ -170,7 +192,7 @@ export class DetailsModalComponent implements OnInit {
         role: 'cancel',
         icon: 'close',
         handler: () => {
-          console.log('Cancel clicked');
+          console.warn('Download cancelled');
         }
       }, ...this.downloadItems]
     });

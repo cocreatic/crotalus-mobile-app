@@ -1,0 +1,26 @@
+<div class="type-selection-wrapper" [class.pristine]="pristine" [appSearchTypeClass]="searchType">
+  <ion-button class="all-type" [class.active]="searchType === searchTypes.all" fill="clear"
+    (click)="setSearchType(searchTypes.all)">
+    <ion-label>Todo</ion-label>
+  </ion-button>
+  <ion-button class="image-type" [class.active]="searchType === searchTypes.image" fill="clear"
+    (click)="setSearchType(searchTypes.image)">
+    <ion-icon slot="icon-only" name="image"></ion-icon>
+  </ion-button>
+  <ion-button class="video-type" [class.active]="searchType === searchTypes.video" fill="clear"
+    (click)="setSearchType(searchTypes.video)">
+    <ion-icon slot="icon-only" name="videocam"></ion-icon>
+  </ion-button>
+  <ion-button class="audio-type" [class.active]="searchType === searchTypes.audio" fill="clear"
+    (click)="setSearchType(searchTypes.audio)">
+    <ion-icon slot="icon-only" name="volume-medium"></ion-icon>
+  </ion-button>
+  <ion-button class="document-type" [class.active]="searchType === searchTypes.document" fill="clear"
+    (click)="setSearchType(searchTypes.document)">
+    <ion-icon slot="icon-only" name="document"></ion-icon>
+  </ion-button>
+  <ion-button class="didactic-unit-type" [class.active]="searchType === searchTypes.didacticUnit" fill="clear"
+    (click)="setSearchType(searchTypes.didacticUnit)">
+    <ion-icon slot="icon-only" name="people"></ion-icon>
+  </ion-button>
+</div>

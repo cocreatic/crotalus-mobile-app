@@ -17,6 +17,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SocialSharing } from "@ionic-native/social-sharing/ngx";
 import { FileTransfer } from '@ionic-native/file-transfer/ngx';
 import { File } from '@ionic-native/file/ngx';
+import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,8 @@ import { File } from '@ionic-native/file/ngx';
     FileTransfer,
     File,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    {provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig}
+    { provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig },
+    AndroidPermissions
   ],
   bootstrap: [AppComponent]
 })

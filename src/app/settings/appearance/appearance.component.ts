@@ -1,6 +1,7 @@
 import { Platform } from '@ionic/angular';
 import { StorageKeys } from './../../models/storageKeys.enum';
 import { Component, OnInit } from '@angular/core';
+import { SearchService } from './../../services/search.service';
 import { Storage } from '@ionic/storage';
 import * as storageModels from './../../models/storageDataModels.interface';
 
@@ -19,6 +20,7 @@ export class AppearanceComponent implements OnInit {
   constructor(
     private storage: Storage,
     private platform: Platform,
+    private searchService: SearchService,
   ) { }
 
   ngOnInit() {
@@ -86,14 +88,17 @@ export class AppearanceComponent implements OnInit {
   }
 
   updateDefaultTypeForSearch(event): void {
-    this.storage.set(StorageKeys.defaultSearchType, event.detail.value).then(
-      () => { },
-      () => { console.log('couldn\'t set the value'); }
-    );
+    if (event.detail.value !== this.defaultSearchType) {
+      this.storage.set(StorageKeys.defaultSearchType, event.detail.value).then(
+        () => { },
+        () => { console.log('couldn\'t set the value'); }
+      );
+      this.searchService.setDefaultSearchChangedInSettings(true);
+    }
   }
 
   async resetCustomConfigs(): Promise<void> {
-    await this.storage.set(StorageKeys.defaultSearchType, 'all');
+    this.updateDefaultTypeForSearch({ detail: { value: 'all' } });
     const defaultDarkMode: storageModels.darkModeData = {
       useSystemDefault: true,
       darkModeEnabled: false,

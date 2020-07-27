@@ -1,8 +1,14 @@
 @import "mixins";
 @import "sass-variables";
 
+:host {
+  --top-content-offset: 56px;
+  --top-content-margin: 20px;
+}
+
 .title {
   padding: 0px 4px 0px 8px;
+  position: fixed;
 
   ion-icon.icon {
     @include icon-size(26px);
@@ -19,6 +25,11 @@
     @include icon-size(26px);
   }
 
+  h4,
+  ion-icon {
+    color: var(--ion-color-crotalus);
+  }
+
   @each $class,
   $color in $content-type-colors {
     &.#{$class} {
@@ -29,6 +40,10 @@
       }
     }
   }
+}
+
+.content {
+  padding-top: calc(var(--top-content-offset) + var(--top-content-margin));
 }
 
 .image-wrapper {

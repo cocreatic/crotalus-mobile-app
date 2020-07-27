@@ -43,7 +43,7 @@ export class ImagePlayerComponent implements OnChanges {
       this.originalFileRequested = true;
     } else {
       // TODO: show image load error
-      console.log('There was an error loading the image');
+      console.warn('There was an error loading the image');
     }
   }
 

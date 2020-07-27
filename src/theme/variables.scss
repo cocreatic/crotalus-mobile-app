@@ -19,7 +19,52 @@
   --didactic-unit-type-color: #fa9e45;
 
   
-  
+  /** crotalus **/
+  --ion-color-crotalus: #616161;
+  --ion-color-crotalus-rgb: 97,97,97;
+  --ion-color-crotalus-contrast: #ffffff;
+  --ion-color-crotalus-contrast-rgb: 255,255,255;
+  --ion-color-crotalus-shade: #555555;
+  --ion-color-crotalus-tint: #717171;
+
+  --ion-color-crotalus-controls: #845EC3;
+  --ion-color-crotalus-controls-rgb: 132,94,195;
+  --ion-color-crotalus-controls-contrast: #ffffff;
+  --ion-color-crotalus-controls-contrast-rgb: 255,255,255;
+  --ion-color-crotalus-controls-shade: #7453ac;
+  --ion-color-crotalus-controls-tint: #906ec9;
+
+  // --ion-color-crotalus-controls: #93BF0A;
+  // --ion-color-crotalus-controls-rgb: 147,191,10;
+  // --ion-color-crotalus-controls-contrast: #000000;
+  // --ion-color-crotalus-controls-contrast-rgb: 0,0,0;
+  // --ion-color-crotalus-controls-shade: #81a809;
+  // --ion-color-crotalus-controls-tint: #9ec523;
+
+  .ion-color-crotalus {
+    --ion-color-base: var(--ion-color-crotalus);
+    --ion-color-base-rgb: var(--ion-color-crotalus-rgb);
+    --ion-color-contrast: var(--ion-color-crotalus-contrast);
+    --ion-color-contrast-rgb: var(--ion-color-crotalus-contrast-rgb);
+    --ion-color-shade: var(--ion-color-crotalus-shade);
+    --ion-color-tint: var(--ion-color-crotalus-tint);
+  }
+
+  .ion-color-crotalus-controls {
+    --ion-color-base: var(--ion-color-crotalus-controls);
+    --ion-color-base-rgb: var(--ion-color-crotalus-controls-rgb);
+    --ion-color-contrast: var(--ion-color-crotalus-controls-contrast);
+    --ion-color-contrast-rgb: var(--ion-color-crotalus-controls-contrast-rgb);
+    --ion-color-shade: var(--ion-color-crotalus-controls-shade);
+    --ion-color-tint: var(--ion-color-crotalus-controls-tint);
+
+    // --ion-color-base: var(--ion-color-crotalus-controls);
+    // --ion-color-base-rgb: var(--ion-color-crotalus-controls-rgb);
+    // --ion-color-contrast: var(--ion-color-crotalus-controls-contrast);
+    // --ion-color-contrast-rgb: var(--ion-color-crotalus-controls-contrast-rgb);
+    // --ion-color-shade: var(--ion-color-crotalus-controls-shade);
+    // --ion-color-tint: var(--ion-color-crotalus-controls-tint);
+  }
 
   /** primary **/
   --ion-color-primary: #673ab7;

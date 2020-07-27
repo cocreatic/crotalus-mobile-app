@@ -23,14 +23,12 @@ export class SearchService {
   public repositories: BoaRepository[];
   public reposConnectedNumber$ = new BehaviorSubject<number>(0);
   public licenses$ = new BehaviorSubject<License[]>([]);
+  private defaultSearchChangedInSettings = false;
 
   options = {
-    // resultsResponseSize: 20,
-    resultsResponseSize: 10,
+    resultsResponseSize: 20,
     minLetters: 3,
   };
-
-
 
   constructor(
     private http: HttpClient,
@@ -60,7 +58,7 @@ export class SearchService {
     return this.repositories && this.repositories.length > 0;
   }
 
-  async search(value: string, firstCall: boolean, searchType: SearchTypes): Promise<Observable<any[]>> {
+  search(value: string, firstCall: boolean, searchType: SearchTypes): Observable<BoaResource[][]> {
     if (firstCall) {
       this.apiRequestsCounter = 0;
     }
@@ -70,7 +68,7 @@ export class SearchService {
     return this.createSearchRequest(value);
   }
 
-  createSearchRequest(value: string): Observable<any[]> {
+  createSearchRequest(value: string): Observable<BoaResource[][]> {
     const requestToPerform = this.repositories.map(
       (repository: BoaRepository) => {
         return this.http.get(this.createRepositoryRequestUrl(value, repository)).pipe(
@@ -101,7 +99,6 @@ export class SearchService {
     const responseSize = this.options.resultsResponseSize;
     const resultsOffset = responseSize * this.apiRequestsCounter;
     const searchParams = `(n)=${responseSize}&(s)=${resultsOffset}`;
-    // so far the only filter used is type of resource to search, but license will be another one.
     const filters = this.typesToSearchQueryString;
     const generatedRequestParams = this.includeLicenses ?
       `${searchParams}${filters ? '&'+filters : ''}&${this.licensesFilterParam}` : `${searchParams}${filters ? '&'+filters : ''}`;
@@ -123,33 +120,19 @@ export class SearchService {
     this.licensesFilterParam = `(meta)[metadata.rights.copyright]=${value}`
   }
 
-
-
   setTypeFilterForSearch(searchType: SearchTypes) {
     const metadataType = 'metadata.technical.format';
-    // let targetTypes: string[];
-    // if (searchTypes === SearchTypes.all) {
-    //   targetTypes = Object.values(SearchTypes);
-    //   targetTypes.shift();
-    // } else {
-    //   targetTypes = [searchTypes];
-    // }
-    // this.typesToSearchQueryString = targetTypes.reduce((prevValue, actualItem, index) => {
-    //     return prevValue + (index !== 0 ? '&' : '') + `(meta)[${metadataType}][${index}]=${actualItem}`;
-    //   }, '');
-
     if (searchType === SearchTypes.all) {
       this.typesToSearchQueryString = '';
     } else if (searchType === SearchTypes.document) {
       this.typesToSearchQueryString = DocumentFormats.reduce((prevValue, actualItem, index) => {
-        return prevValue + (index !== 0 ? '&' : '') + `(meta)[${metadataType}][${index}]=${actualItem}`;
+        return prevValue + (index !== 0 ? '&' : '') + `(meta)[${metadataType}][${index}]="${actualItem}"`;
       }, '');
     } else if (searchType === SearchTypes.didacticUnit) {
       this.typesToSearchQueryString = '(meta)[metadata.educational.learning_resource_type]="temathic unit"'
     } else {
       this.typesToSearchQueryString = `(meta)[${metadataType}]=${searchType}`;
     }
-
   }
 
   updateActiveLicenses(filterValue: string, active: boolean) {
@@ -164,6 +147,17 @@ export class SearchService {
 
   getLicenses(): Observable<License[]> {
     return this.licenses$;
+  }
+
+  getDefaultSearchChangedInSettings(): boolean {
+    return this.defaultSearchChangedInSettings;
+  }
+
+  setDefaultSearchChangedInSettings(value: boolean): void {
+    if (this.defaultSearchChangedInSettings === value) {
+      return;
+    }
+     this.defaultSearchChangedInSettings = value;
   }
 
 }

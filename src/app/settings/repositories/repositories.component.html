@@ -11,24 +11,14 @@
         <div class="content-wrapper">
           <ion-label class="title">Repositorios disponibles</ion-label>
           <ion-list>
-            <ion-item class="repository" *ngFor="let repository of connectedRepositories, let i = index">
+            <ion-item class="repository" *ngFor="let repository of repositoriesToShow">
               <ion-avatar slot="start">
-                <ion-toggle [checked]="true" color="success" (ionChange)="toggleRepository(repository, i)" ></ion-toggle>
+                <ion-toggle [checked]="repository.connected" color="crotalus-controls" (ionChange)="toggleRepository($event, repository)" ></ion-toggle>
               </ion-avatar>
               <ion-label>
                 <h2>{{repository.name}}</h2>
                 <h3>Catalogos: {{repository.catalogs.length}}</h3>
                 <p>{{getCataloguesList(repository)}}</p>
-              </ion-label>
-            </ion-item>
-            <ion-item class="repository" *ngFor="let repository of nonConnectedRepositories">
-              <ion-avatar slot="start">
-                <ion-toggle [checked]="false" color="success" (ionChange)="toggleRepository(repository)" ></ion-toggle>
-              </ion-avatar>
-              <ion-label>
-                <h2>{{repository.name}}</h2>
-                <h3>Catalogos: {{repository.catalogs.length}}</h3>
-                <p class="catalogues-name">{{getCataloguesList(repository)}}</p>
               </ion-label>
             </ion-item>
           </ion-list>
