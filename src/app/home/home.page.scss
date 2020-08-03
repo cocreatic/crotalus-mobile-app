@@ -11,6 +11,7 @@ $search-bar-elements-height: 40px;
 
 ion-content {
   --background: var(--custom-background);
+  padding-top: env(safe-area-inset-top, 0);
 }
 
 ion-header.main-header {

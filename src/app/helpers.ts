@@ -19,7 +19,7 @@ export const getItemTypeLabel = (itemType: string, plural?: boolean) => {
       return plural ? 'Unidades didacticas' : 'Unidad didáctica';
 
     default:
-      return 'Undefined';
+      return 'Otros';
   }
 };
 
