@@ -17,6 +17,7 @@ ion-content {
 ion-header.main-header {
   background-color: var(--header-background);
   z-index: 1001;
+  padding-top: env(safe-area-inset-top, 0);
 
   .search-area {
     padding-bottom: 0px;
