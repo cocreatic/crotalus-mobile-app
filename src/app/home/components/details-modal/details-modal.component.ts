@@ -130,16 +130,16 @@ export class DetailsModalComponent implements OnInit, AfterViewChecked {
     };
     this.socialSharing.shareWithOptions(options)
       // .then(result => { this.onShareSuccess(result) })
-      .catch(error => { this, this.onShareError(error) });
+      .catch(error => { this.onShareError(error); });
   }
 
   onShareError = (msg) => {
-    console.log("Sharing failed with message: " + msg);
-  };
+    console.log('Sharing failed with message: ' + msg);
+  }
 
   async download(resource: any): Promise<FileEntry | string> {
     const fileNameInUrl: string = resource.url.slice(resource.url.lastIndexOf('/') + 1);
-    let fileName = this.manifest.title ? this.manifest.title.slice(0, this.manifest.title.lastIndexOf('.')) : this.title;
+    const fileName = this.manifest.title ? this.manifest.title.slice(0, this.manifest.title.lastIndexOf('.')) : this.title;
     let fileNameExt: string;
     if (fileNameInUrl) {
       fileNameExt = fileNameInUrl.split('.').pop();
@@ -153,7 +153,7 @@ export class DetailsModalComponent implements OnInit, AfterViewChecked {
     const resource = {
       name: '',
       url: this.getResourceDownloadUrl('original'),
-    }
+    };
     const downloadedFile = await this.download(resource);
     if (downloadedFile === 'error') {
       this.presentToast('Error en la descarga. Inténtalo de nuevo', 2000);
@@ -169,7 +169,7 @@ export class DetailsModalComponent implements OnInit, AfterViewChecked {
       this.presentToast('Este tipo de recurso no está disponible para descarga', 2000);
       return;
     }
-    
+
     if (!this.downloadItems) {
       this.downloadItems = this.alternates.map(alternate => ({
         text: this.getSizeLabel(alternate),

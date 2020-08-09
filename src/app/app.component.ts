@@ -17,7 +17,6 @@ const { SplashScreen } = Plugins;
 })
 export class AppComponent {
 
-  
   systemDarkModeOn: boolean;
   userDarkModeSettings: storageModels.darkModeData;
 
@@ -31,9 +30,11 @@ export class AppComponent {
 
   initializeApp(): void {
     this.platform.ready().then(async () => {
-      window['StatusBar'].overlaysWebView(false);
-      this.systemDarkModeOn = window.navigator.userAgent.includes('AndroidDarkMode');
-      await this.shouldSetDarkMode();
+      if (window.hasOwnProperty('StatusBar')) {
+        window['StatusBar'].overlaysWebView(false);
+        this.systemDarkModeOn = window.navigator.userAgent.includes('AndroidDarkMode');
+        await this.shouldSetDarkMode();
+      }
       setTimeout(() => {
         SplashScreen.hide();
       }, 100);

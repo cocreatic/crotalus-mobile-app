@@ -3,11 +3,11 @@ import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer/ng
 import { File } from '@ionic-native/file/ngx';
 import { Platform, LoadingController } from '@ionic/angular';
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
-import * as Helpers from "./../helpers";
+import * as Helpers from './../helpers';
 
 interface DownloadResource {
-  alternateName: string,
-  url: string
+  alternateName: string;
+  url: string;
 }
 
 @Injectable({
@@ -68,7 +68,7 @@ export class DownloadService {
     }
     deviceDirectoryPath = `${deviceDirectoryPath}${fileTypeFolder}/`;
     try {
-      const result = await this.fileTransfer.download(url, deviceDirectoryPath + fileName);
+      const result = await this.fileTransfer.download(encodeURI(url), deviceDirectoryPath + fileName);
       this.downloadingAlert.dismiss();
       return result;
     } catch (error) {
@@ -91,7 +91,7 @@ export class DownloadService {
   }
 
   selectDeviceStoragePath(): string {
-    return this.platform.is('ios') ? this.file.dataDirectory : this.file.externalRootDirectory;
+    return this.platform.is('ios') ? this.file.documentsDirectory : this.file.externalRootDirectory;
   }
 
   async showDownloadingAlert() {
