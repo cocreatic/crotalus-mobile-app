@@ -250,6 +250,7 @@ export class HomePage implements OnInit, AfterViewChecked {
     this.detailsPageActive = true;
     this.shouldClearAudioPlaying();
     const modal = await this.modalController.create({
+      cssClass: 'details-modal',
       component: DetailsModalComponent,
       componentProps: {
         itemAboutString: item.about,

@@ -18,6 +18,7 @@ import { SocialSharing } from "@ionic-native/social-sharing/ngx";
 import { FileTransfer } from '@ionic-native/file-transfer/ngx';
 import { File } from '@ionic-native/file/ngx';
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
+import { ThemeDetection } from '@ionic-native/theme-detection/ngx';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
     IonicStorageModule.forRoot(),
   ],
   providers: [
+    ThemeDetection,
     StatusBar,
     SplashScreen,
     SocialSharing,

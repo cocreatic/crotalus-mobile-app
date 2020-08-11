@@ -1,4 +1,3 @@
-import { SearchService } from './services/search.service';
 import { StorageKeys } from './models/storageKeys.enum';
 import { Component } from '@angular/core';
 
@@ -6,6 +5,7 @@ import { Platform } from '@ionic/angular';
 import { Storage } from '@ionic/storage';
 import * as storageModels from './models/storageDataModels.interface';
 import { Plugins } from '@capacitor/core';
+import { ThemeDetection, ThemeDetectionResponse } from '@ionic-native/theme-detection/ngx';
 
 
 const { SplashScreen } = Plugins;
@@ -23,7 +23,7 @@ export class AppComponent {
   constructor(
     private platform: Platform,
     private storage: Storage,
-    private searchService: SearchService
+    private themeDetection: ThemeDetection,
   ) {
     this.initializeApp();
   }
@@ -32,9 +32,23 @@ export class AppComponent {
     this.platform.ready().then(async () => {
       if (window.hasOwnProperty('StatusBar')) {
         window['StatusBar'].overlaysWebView(false);
-        this.systemDarkModeOn = window.navigator.userAgent.includes('AndroidDarkMode');
-        await this.shouldSetDarkMode();
       }
+
+      if (this.platform.is('android')) {
+        this.systemDarkModeOn = window.navigator.userAgent.includes('AndroidDarkMode');
+      } else if (this.platform.is('ios')) {
+        try {
+          const themeDetectionAvailable = (await this.themeDetection.isAvailable()).value;
+          const systemDarkModeDetection = themeDetectionAvailable ? (await this.themeDetection.isDarkModeEnabled()).value : false;
+          this.systemDarkModeOn = systemDarkModeDetection;
+        } catch (error) {
+          console.warn(error);
+          this.systemDarkModeOn = false;
+        }
+      }
+
+      await this.shouldSetDarkMode();
+
       setTimeout(() => {
         SplashScreen.hide();
       }, 100);
@@ -55,7 +69,7 @@ export class AppComponent {
       }
 
       if (this.userDarkModeSettings.useSystemDefault) {
-        this.setTheme(window.navigator.userAgent.includes('AndroidDarkMode'));
+        this.setTheme(this.systemDarkModeOn);
       } else {
         this.setTheme(this.userDarkModeSettings.darkModeEnabled);
       }
@@ -64,13 +78,15 @@ export class AppComponent {
 
   setTheme(dark: boolean) {
     document.body.classList.toggle('dark', dark);
-    if (dark) {
-      window['StatusBar'].styleLightContent();
-    } else {
-      window['StatusBar'].styleDefault();
+    if (window.hasOwnProperty('StatusBar')) {
+      if (dark) {
+        window['StatusBar'].styleLightContent();
+      } else {
+        window['StatusBar'].styleDefault();
+      }
+      const statusBarColor = getComputedStyle(document.body).getPropertyValue('--custom-background').trim();
+      window['StatusBar'].backgroundColorByHexString(statusBarColor);
     }
-    const statusBarColor = getComputedStyle(document.body).getPropertyValue('--custom-background').trim();
-    window['StatusBar'].backgroundColorByHexString(statusBarColor);
     if (this.platform.is('android') && window.hasOwnProperty('NavigationBar')) {
       const navigationBarColor = dark ? '#000000' : '#ffffff';
       const ligthNavigationBar = dark ? false : true;

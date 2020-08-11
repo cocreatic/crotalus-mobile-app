@@ -48,6 +48,7 @@ ion-header.main-header {
 
     &.small-padding {
       padding: 2px 0;
+      --border-width: 0;
     }
 
     .app-title {
@@ -112,21 +113,24 @@ ion-header.main-header {
     }
   }
 
-  ::ng-deep app-search-type-selector {
-    .type-selection-wrapper {
-      border-bottom-width: 3px;
-      margin: 0;
+  :host ::ng-deep {
+    .ios app-search-type-selector .type-selection-wrapper {
+      margin-top: 0;
+    }  
+
+    app-search-type-selector {
+      .type-selection-wrapper {
+        border-bottom-width: 3px;
+        margin: 0;
+      }
     }
   }
 
 }
 
-
-
-
 #container {
   background-color: var(--custom-background);
-  padding: 15px 0 20px;
+  padding: calc(env(safe-area-inset-top, 0) + 15px) 0 20px;
   min-height: 100%;
   position: relative;
 
@@ -258,6 +262,10 @@ ion-header.main-header {
   transition: transform $animation-duration ease-in-out;
   z-index: 1;
 
+  .ios & {
+    margin-bottom: 0;
+  }
+
   &.pristine {
     transform: translateY(38vh);
     justify-content: center;
@@ -299,6 +307,11 @@ ion-header.main-header {
     --padding-end: 6px;
     min-width: 32px;
 
+    &.ios {
+      --box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+      border-radius: 4px;
+    }
+
     @each $class,
     $color in $content-type-colors {
       &.#{$class} {
@@ -307,8 +320,6 @@ ion-header.main-header {
     }
   }
 }
-
-
 
 .first-search-indicator {
   position: absolute;
@@ -371,4 +382,11 @@ ion-menu {
     }
   }
 
+}
+
+@media screen and (min-width: 768px) {
+  ::ng-deep .details-modal ion-content {
+    border-radius: 10px;
+    overflow: hidden;
+  }
 }

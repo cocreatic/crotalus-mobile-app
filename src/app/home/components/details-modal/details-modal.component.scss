@@ -131,8 +131,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  max-width: 400px;
-  margin-bottom: 30px;
+  margin-bottom: 60px;
 
   ion-button:first-child {
     margin-right: 10px;
@@ -156,6 +155,10 @@
     opacity: 0;
   }
 
+  .action-sheet-group.sc-ion-action-sheet-ios:not(.action-sheet-group-cancel) button ion-icon {
+    display: none;
+  }
+  
   .action-sheet-icon {
     margin: 0;
     margin-right: 10px;
