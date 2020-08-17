@@ -1,0 +1,14 @@
+<ion-card>
+  <img class="loading-image" *ngIf="!imageVisible" src="/assets/img/crotalus_sketchy.svg" alt="image loading">
+  <img
+    [hidden]=!imageVisible
+    [src]="imageSrc"
+    [alt]="metadata.general.title.none"
+    (load)="showImage()"
+    (error)="imageLoadError()"
+  >
+  <ion-card-header>
+    <span class="repository-name">{{imageItem.repositoryName}}</span>
+    <ion-card-title>{{metadata.general.title.none}}</ion-card-title>
+  </ion-card-header>
+</ion-card>

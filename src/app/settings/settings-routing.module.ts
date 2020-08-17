@@ -8,7 +8,7 @@ import { SettingsPage } from './settings.page';
 
 const routes: Routes = [
   {
-    path: 'settings',
+    path: '',
     component: SettingsPage,
     children: [
       { path: 'appearance', component: AppearanceComponent },
@@ -17,7 +17,7 @@ const routes: Routes = [
       { path: '', redirectTo: 'appearance' },
     ]
   },
-  { path: '', redirectTo: 'settings'}
+  // { path: '', redirectTo: 'settings'}
 
 ];
 

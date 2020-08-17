@@ -1,0 +1,8 @@
+<img class="loading-image" *ngIf="!imageVisible" src="/assets/img/crotalus_sketchy.svg" alt="image loading">
+<img
+  [hidden]=!imageVisible
+  [src]="imageSrc"
+  [alt]="altText"
+  (load)="showImage()"
+  (error)="imageLoadError()"
+>

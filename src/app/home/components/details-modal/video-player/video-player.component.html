@@ -1,0 +1,14 @@
+<div class="video-player-wrapper">
+  <img class="loading-video" *ngIf="!videoLoaded" src="/assets/img/crotalus_sketchy.svg" alt="video loading">
+  <video controls *ngIf="videoSrc" [class.show-error-msg]="showVideoError" [hidden]="!videoLoaded" (canplaythrough)="videoDataReady($event)">
+    <source [src]="videoSrc" [type]="format" preload="metadata" webkit-playsinline=“webkit-playsinline” (error)="handleVideoError($event)">
+  </video>
+  <!-- <div *ngIf="showVideoError" class="video-error-message" [@visibilityChangedFade]> -->
+  <div *ngIf="showVideoError" class="video-error-message">
+    <p class="main">
+      <ion-icon name="sad-outline"></ion-icon>
+      <span>Lo sentimos!!.</span>
+    </p>
+    <p class="message">Este video no está disponible en este momento</p>
+  </div>
+</div>

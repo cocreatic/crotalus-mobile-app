@@ -1,0 +1,16 @@
+:host {
+  --column-flex-basis: 50%;
+}
+
+.results-box {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+
+  .column {
+    flex: 1 1 var(--column-flex-basis);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+}

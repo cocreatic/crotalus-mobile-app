@@ -1,9 +1,9 @@
   <ion-header>
     <ion-toolbar>
       <ion-button slot="start" [routerLink]="['/home']" fill="clear" class="back-button">
-        <ion-icon slot="icon-only" name="arrow-back" color="primary"></ion-icon>
+        <ion-icon slot="icon-only" name="arrow-back" color="crotalus"></ion-icon>
       </ion-button>
-      <ion-segment (ionChange)="navSegmentChanged($event)" [value]="tabsCurrentValue">
+      <ion-segment (ionChange)="navSegmentChanged($event)" [value]="tabsCurrentValue" color="crotalus">
         <ion-segment-button value="appearance">
           <ion-label>Apariencia</ion-label>
         </ion-segment-button>

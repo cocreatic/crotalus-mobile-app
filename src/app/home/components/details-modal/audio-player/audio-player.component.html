@@ -1,0 +1,22 @@
+<div class="player-wrapper" *ngIf="audioSrc">
+  <audio #player [src]="audioSrc">
+    <!-- <audio #player src="https://freesound.org/data/previews/521/521275_2535988-lq.mp3"> -->
+  </audio>
+  <div class="actions">
+    <ion-button class="main-action" (click)="play()" size="large" [disabled]="isLoading">
+      <ion-spinner *ngIf="isLoading; else playIcon"></ion-spinner>
+      <ng-template #playIcon>
+        <ion-icon [name]="isPlaying ? 'pause' : 'play'" slot="icon-only"></ion-icon>
+      </ng-template>
+    </ion-button>
+    <ion-button class="secondary-action" (click)="toggleVolume()" fill="clear"  [disabled]="isLoading">
+      <ion-icon [name]="isMuted ? 'volume-mute' : 'volume-high'"></ion-icon>
+    </ion-button>
+  </div>
+  <div class="slider-wrapper" [class.loading]="isLoading">
+    <ion-label color="light" slot="start">{{ currentTimeFormatted }}</ion-label>
+    <mat-slider min="0" [max]="duration" [value]="currentTime" (change)="seek($event)"
+      [disabled]="isLoading || duration === 1" [class.smooth-marker]="smoothMarker"></mat-slider>
+    <ion-label color="light" slot="end">{{ durationFormatted }}</ion-label>
+  </div>
+</div>

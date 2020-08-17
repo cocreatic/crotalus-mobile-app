@@ -1,8 +1,10 @@
 import { Platform } from '@ionic/angular';
 import { StorageKeys } from './../../models/storageKeys.enum';
 import { Component, OnInit } from '@angular/core';
-import { Storage } from "@ionic/storage";
+import { SearchService } from './../../services/search.service';
+import { Storage } from '@ionic/storage';
 import * as storageModels from './../../models/storageDataModels.interface';
+import { ThemeDetection } from '@ionic-native/theme-detection/ngx';
 
 @Component({
   selector: 'app-appearance',
@@ -19,6 +21,8 @@ export class AppearanceComponent implements OnInit {
   constructor(
     private storage: Storage,
     private platform: Platform,
+    private searchService: SearchService,
+    private themeDetection: ThemeDetection,
   ) { }
 
   ngOnInit() {
@@ -61,23 +65,42 @@ export class AppearanceComponent implements OnInit {
     );
   }
 
-  shouldSetDarkMode(): void {
-    if (this.useSystemThemeMode) {
-      this.setTheme(window.navigator.userAgent.includes('AndroidDarkMode'));
-    } else {
-      this.setTheme(this.darkThemeEnabled);
-    }
+
+
+
+  async shouldSetDarkMode(): Promise<void> {
+      if (this.useSystemThemeMode) {
+        let systemDarkModeOn: boolean;
+        if (this.platform.is('android')) {
+          systemDarkModeOn = window.navigator.userAgent.includes('AndroidDarkMode');
+        } else if (this.platform.is('ios')) {
+          try {
+            const themeDetectionAvailable = (await this.themeDetection.isAvailable()).value;
+            const systemDarkModeDetection = themeDetectionAvailable ? (await this.themeDetection.isDarkModeEnabled()).value : false;
+            systemDarkModeOn = systemDarkModeDetection;
+          } catch (error) {
+            console.warn(error);
+            systemDarkModeOn = false;
+          }
+        }
+
+        this.setTheme(systemDarkModeOn);
+      } else {
+        this.setTheme(this.darkThemeEnabled);
+      }
   }
 
   setTheme(dark: boolean) {
     document.body.classList.toggle('dark', dark);
-    if (dark) {
-      window['StatusBar'].styleLightContent();
-    } else {
-      window['StatusBar'].styleDefault();
+    if (window.hasOwnProperty('StatusBar')) {
+      if (dark) {
+        window['StatusBar'].styleLightContent();
+      } else {
+        window['StatusBar'].styleDefault();
+      }
+      const statusBarColor = getComputedStyle(document.body).getPropertyValue('--custom-background').trim();
+      window['StatusBar'].backgroundColorByHexString(statusBarColor);
     }
-    const statusBarColor = getComputedStyle(document.body).getPropertyValue('--status-bar-background').trim();
-    window['StatusBar'].backgroundColorByHexString(statusBarColor);
     if (this.platform.is('android') && window.hasOwnProperty('NavigationBar')) {
       const navigationBarColor = dark ? '#000000' : '#ffffff';
       const ligthNavigationBar = dark ? false : true;
@@ -85,15 +108,47 @@ export class AppearanceComponent implements OnInit {
     }
   }
 
+
+
+
+
+
+  // shouldSetDarkModeOld(): void {
+  //   if (this.useSystemThemeMode) {
+  //     this.setTheme(window.navigator.userAgent.includes('AndroidDarkMode'));
+  //   } else {
+  //     this.setTheme(this.darkThemeEnabled);
+  //   }
+  // }
+
+  // setThemeold(dark: boolean) {
+  //   document.body.classList.toggle('dark', dark);
+  //   if (dark) {
+  //     window['StatusBar'].styleLightContent();
+  //   } else {
+  //     window['StatusBar'].styleDefault();
+  //   }
+  //   const statusBarColor = getComputedStyle(document.body).getPropertyValue('--status-bar-background').trim();
+  //   window['StatusBar'].backgroundColorByHexString(statusBarColor);
+  //   if (this.platform.is('android') && window.hasOwnProperty('NavigationBar')) {
+  //     const navigationBarColor = dark ? '#000000' : '#ffffff';
+  //     const ligthNavigationBar = dark ? false : true;
+  //     window['NavigationBar'].backgroundColorByHexString(navigationBarColor, ligthNavigationBar);
+  //   }
+  // }
+
   updateDefaultTypeForSearch(event): void {
-    this.storage.set(StorageKeys.defaultSearchType, event.detail.value).then(
-      () => { },
-      () => { console.log('couldn\'t set the value'); }
-    );
+    if (event.detail.value !== this.defaultSearchType) {
+      this.storage.set(StorageKeys.defaultSearchType, event.detail.value).then(
+        () => { },
+        () => { console.log('couldn\'t set the value'); }
+      );
+      this.searchService.setDefaultSearchChangedInSettings(true);
+    }
   }
 
   async resetCustomConfigs(): Promise<void> {
-    await this.storage.set(StorageKeys.defaultSearchType, 'all');
+    this.updateDefaultTypeForSearch({ detail: { value: 'all' } });
     const defaultDarkMode: storageModels.darkModeData = {
       useSystemDefault: true,
       darkModeEnabled: false,

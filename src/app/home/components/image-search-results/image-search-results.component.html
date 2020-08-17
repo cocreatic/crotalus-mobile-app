@@ -1,0 +1,15 @@
+<div class="image-results-wrapper" #contentWrapper>
+  <ng-container *ngIf="showResults">
+    <div class="results-box">
+      <ng-container *ngFor="let resultsColumn of resultsInColumns">
+        <div class="column">
+          <app-image-result-card 
+            *ngFor="let imageItem of resultsColumn"
+            [imageItem]="imageItem"
+            (click)="openDetails.emit(imageItem)"
+          ></app-image-result-card>
+        </div>
+      </ng-container>
+    </div>
+  </ng-container>
+</div>

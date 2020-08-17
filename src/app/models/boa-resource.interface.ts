@@ -37,7 +37,7 @@ export interface BoaResourceManifest {
   version?: number;
 }
 
-interface BoaResourceMetadata {
+export interface BoaResourceMetadata {
   general: {
     title: {
       none: string;

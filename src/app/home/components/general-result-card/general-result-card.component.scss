@@ -1,0 +1,126 @@
+@import "responsive-breakpoints";
+@import "sass-variables";
+
+ion-card {
+  margin-bottom: 25px;
+}
+
+.top-info-bar {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+
+  .repository-name {
+    flex-grow: 1;
+    text-align: center;
+    color: var(--ion-color-medium-tint);
+    padding-right: 80px;
+  }
+
+  ion-chip {
+    color: var(--ion-color-crotalus);
+    border-color: var(--ion-color-crotalus);
+
+    ion-icon {
+      color: var(--ion-color-crotalus);
+    }
+
+
+    @each $class, $color in $content-type-colors {
+      &.#{$class} {
+        color: $color;
+        border-color: $color;
+
+        ion-icon {
+          color: $color;
+        }
+      }
+    }
+  }
+}
+
+.card-content-column {
+  flex: 1 0 auto;
+  max-width: 100%;
+
+  ion-card-header {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  ion-card-title {
+    font-size: 18px;
+    padding-top: 10px;
+    padding-bottom: 14px;
+    font-family: "Cabin Sketch", cursive;
+    font-weight: bold;
+    letter-spacing: 0.03em;
+  }
+
+  ion-card-content {
+    font-size: 15px;
+
+    @media #{$xsmall} {
+      padding-bottom: 0;
+    }
+  }
+}
+
+p.description {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+p.keywords {
+  margin-top: 12px;
+  margin-left: 12px;
+  font-size: 13px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.card-thumbnail-column {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+
+  ion-card-content {
+    padding-top: 0;
+    padding-right: 8px;
+  }
+
+  img {
+    max-width: 150px;
+    min-width: 80px;
+    max-height: 150px;
+    border-radius: 4px;
+    margin: 0 auto;
+  }
+
+  @media #{$xsmall} {
+    justify-content: space-between;
+    align-items: flex-start;
+
+    ion-row {
+      height: 138px;
+      width: 100%;
+    }
+
+    p.keywords {
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 5;
+      -webkit-box-orient: vertical;
+    }
+
+    img {
+      max-width: 128px;
+      max-height: 128px;
+    }
+  }
+}
